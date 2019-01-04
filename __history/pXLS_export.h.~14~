@@ -1,0 +1,37 @@
+//---------------------------------------------------------------------------
+
+#ifndef pXLS_exportH
+#define pXLS_exportH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvGlowButton.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Dialogs.hpp>
+
+#include "./main.h"
+#include "./pXLS_import.h"
+//#include "./pXLS_export.h"
+
+//---------------------------------------------------------------------------
+class TpEXCEL_export : public TForm
+{
+__published:	// IDE-managed Components
+    TRadioGroup *uOPT_XLS_export_Type;
+    TAdvGlowButton *uBTN_XLS_export_Save;
+    TAdvGlowButton *uBTN_XLS_export_Close;
+    TSaveDialog *uDLG_XLS_export;
+    void __fastcall uBTN_XLS_export_CloseClick(TObject *Sender);
+    void __fastcall uBTN_XLS_export_SaveClick(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+    __fastcall TpEXCEL_export(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+//extern PACKAGE TPGM *PGM;                      // ¸ÞÀÎ
+//extern PACKAGE TpEXCEL_import *pEXCEL_import;  // ¿¢¼¿ÀÓÆ÷ÆÃ ÆË¾÷
+extern PACKAGE TpEXCEL_export *pEXCEL_export;  // ¿¢¼¿ÀÍ½ºÆ÷ÆÃ ÆË¾÷
+//---------------------------------------------------------------------------
+#endif

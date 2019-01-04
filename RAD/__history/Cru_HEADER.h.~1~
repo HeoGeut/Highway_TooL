@@ -1,0 +1,54 @@
+#pragma once
+
+#ifndef __Cru_HEADER_H
+#define __Cru_HEADER_H
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+
+// Pre-Compiled 헤더링크
+#include "./RAD/Pre_Compiled.h"
+
+    #include "./RAD/Cru_TGA.h"
+    #include "./RAD/Cru_DDS.h"
+
+    #include "./RAD/Sys_DEBUG.h"
+    #include "./RAD/Sys_PARSiNG.h"
+    #include "./RAD/Sys_TiMER.h"
+
+    #include "./RAD/Cru_QUEUE.h"
+
+    #include "./RAD/Cru_3D.h"
+    #include "./RAD/Cru_FUNCs.h"
+
+    #include "./RAD/fmod/inc/fmod.hpp"
+    #include "./RAD/fmod/inc/fmod_errors.h"
+
+    #include "./RAD/Cru_SOUND.h"
+
+    #include "./RAD/Cru_HAN.h"
+
+#include "./RAD/Cru_EVENT.h"
+
+#include "./RAD/Cru_BND.h"
+#include "./RAD/Cru_PHYSiCs.h"
+#include "./RAD/Cru_ANi.h"
+#include "./RAD/Cru_Route.h"
+#include "./RAD/Cru_MotionBLOW.h"
+
+    #include "./RAD/Cru_WiDGET.h"
+    #include "./RAD/Cru_Ui.h"
+    #include "./RAD/Cru_SCRiPT.h"
+    #include "./RAD/Cru_SYSTEM.h"
+
+    #include "./RAD/Cru_GAME.h"
+
+    #include "./RAD/Cru_PROCESS.h"
+
+    #include "./Main.h"
+
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+#endif
+

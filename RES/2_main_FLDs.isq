@@ -1,0 +1,75 @@
+// 메인테이블 칼럼 클리어
+CLEAR_DB_col_main
+
+// 메인테이블 칼럼정의
+// DB_col_main = 필드순번, 표시여부, 칼럼폭, 필드영문이름, 필드한글이름
+//============================================================
+DB_col_main =  0, 1,  25, (chk),        (출력)
+DB_col_main =  1, 1,  50, idx,          인덱스
+DB_col_main = 42, 1,  70, work_condi,   작업상태
+DB_col_main = 43, 1,  70, app_condi,    승인상태
+DB_col_main = 35, 1,  70, buy_type,     구매유형
+DB_col_main =  2, 1, 100, sel_date,     선정일자
+DB_col_main = 10, 1, 100, brd_name,     브랜드
+DB_col_main = 49, 1,  70, acc_id,       계정ID
+DB_col_main =  3, 1,  80, sel_cod,      판매자_관리코드
+DB_col_main = 14, 1, 200, kr_prd_name,  상품명
+DB_col_main =  6, 1, 150, op_1,         옵션(색상)
+DB_col_main =  7, 1, 150, op_2,         옵션(사이즈)
+DB_col_main = 18, 1,  90, sell_pri,     판매가
+DB_col_main = 29, 1, 100, lastmod_date, 수정일자
+DB_col_main = 46, 1,  80, memo1,        메모1
+DB_col_main = 47, 1,  80, memo2,        메모2
+DB_col_main = 48, 1,  80, memo3,        메모3
+
+DB_col_main = 11, 0, 100, cn_mkt_name,  중국마켓명
+DB_col_main = 13, 0,  50, cate_1,       카테고리
+DB_col_main = 15, 0,  50, dlv_chg_pli,  배송비 정책
+DB_col_main = 16, 0,  90, cny_pri,      구매가격(￥)
+DB_col_main = 17, 0,  90, krw_pri,      구매가격(원)
+DB_col_main = 19, 0,  90, dlv_chg,      배송비
+DB_col_main = 20, 0,  50, prd_reg_chk,  등록여부
+DB_col_main = 21, 0,  50, mrg_ex,       예상마진
+DB_col_main = 22, 0,  50, mrg_pct,      마진율 (20~30%)
+DB_col_main = 23, 0,  30, min_qty,      최소수량
+DB_col_main = 24, 0, 100, re_kwd,       키워드
+DB_col_main = 28, 0,  80, cate_2,       한글카테고리
+DB_col_main = 30, 0, 100, mkt_name,     등록마켓
+DB_col_main = 31, 0,  70, mkt_id,       계정
+DB_col_main = 32, 0,  50, cate_3,       카테고리(자사몰)
+DB_col_main = 34, 0,  80, prd_condi,    상품상태
+DB_col_main = 36, 0,  50, cust_info,    거래처정보
+DB_col_main = 44, 0,  50, sale_condi,   판매상태(자사몰)
+
+// 기본칼럼 리셋
+DB_default_main_FLDs = 1, 42, 43, 35, 2, 10, 49, 3, 14, 6, 7, 18, 29, 46, 47, 48
+====================================================================================
+// 발주테이블 칼럼 클리어
+CLEAR_DB_col_order
+
+// 발주테이블 칼럼정의
+// DB_col_order = 필드순번, 표시여부, 칼럼폭, 필드영문이름, 필드한글이름
+
+DB_col_order =  0, 1,  25, (chk),          (출력)
+DB_col_order =  1, 1, 100, ORD_MNG_SN,     발주 관리 고유번호
+DB_col_order =  2, 1, 100, ORD_REQ_DT,     발주 요청 일자
+DB_col_order =  3, 1, 100, GDS_INV_CODE,   제품 송장 코드
+DB_col_order =  4, 1, 100, ORDR_SN,        주문 고유번호
+DB_col_order =  5, 1, 100, CHI_ORDR_NBR,   중국 주문 번호
+DB_col_order =  6, 1, 100, CHI_RLSE_DT,    중국 출고 일자
+DB_col_order =  7, 1, 100, CHI_ENTR_DT,    중국 입고 일자
+DB_col_order =  8, 1, 100, CHI_ENTR_DV,    중국 입고 구분
+DB_col_order =  9, 1, 100, CHI_ENTR_PRD,   중국 입고 상품
+DB_col_order = 10, 1, 100, DELV_STAT_CODE, 배송 상태 코드
+DB_col_order = 11, 1, 100, CHNS_OPT,       중국어 옵션
+DB_col_order = 12, 1, 100, ORDR_STAT_CODE, 주문 상태 코드
+DB_col_order = 13, 1, 100, MEMO_MNG_SN,    메모 관리 고유번호
+DB_col_order = 14, 1, 100, FRST_REGR_ID,   최초 등록자 ID
+DB_col_order = 15, 1, 100, FRST_REG_DT,    최초 등록 일자
+DB_col_order = 16, 1, 100, LST_MODR_ID,    최종 수정자 ID
+DB_col_order = 17, 1, 100, LST_CHNG_DT,    최종 수정 일자
+
+// 기본칼럼 리셋
+DB_default_order_FLDs = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17
+=====================================================================================
+

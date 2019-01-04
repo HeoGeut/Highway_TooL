@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="RAD"/>
+    <File Path="RAD\Cru_CommaLiST.cpp"/>
+    <File Path="RAD\Cru_CommaLiST.h"/>
+    <File Path="RAD\Cru_DEFiNE.h"/>
+    <File Path="RAD\Cru_FUNCs.cpp"/>
+    <File Path="RAD\Cru_FUNCs.h"/>
+    <File Path="RAD\Cru_HEADER.h"/>
+    <File Path="RAD\Cru_PROCESS.cpp"/>
+    <File Path="RAD\Cru_PROCESS.h"/>
+    <File Path="RAD\Cru_QUEUE.cpp"/>
+    <File Path="RAD\Cru_QUEUE.h"/>
+    <File Path="RAD\Cru_SCRiPT.cpp"/>
+    <File Path="RAD\Cru_SCRiPT.h"/>
+    <File Path="RAD\Cru_SpaceLiST.cpp"/>
+    <File Path="RAD\Cru_SpaceLiST.h"/>
+    <File Path="RAD\Cru_SYSTEM.cpp"/>
+    <File Path="RAD\Cru_SYSTEM.h"/>
+    <File Path="RAD\Pre_Compiled.h"/>
+    <File Path="RAD\Sys_DEBUG.cpp"/>
+    <File Path="RAD\Sys_DEBUG.h"/>
+    <File Path="RAD\Sys_PARSiNG.cpp"/>
+    <File Path="RAD\Sys_PARSiNG.h"/>
+    <File Path="RAD\Sys_TiMER.cpp"/>
+    <File Path="RAD\Sys_TiMER.h"/>
+    <File Path="Highway_TooL.cpp"/>
+    <File Path="Highway_TooLPCH1.h"/>
+    <File Path="Main.cpp"/>
+    <File Path="Main.cpp"/>
+    <File Path="Main.dfm"/>
+    <File Path="Main.h"/>
+    <File Path="pXLS_import.cpp"/>
+    <File Path="pXLS_import.cpp"/>
+    <File Path="pXLS_import.dfm"/>
+    <File Path="pXLS_import.h"/>
+    <File Path="pXLS_export.cpp"/>
+    <File Path="pXLS_export.cpp"/>
+    <File Path="pXLS_export.dfm"/>
+    <File Path="pXLS_export.h"/>
+  </ProjectSortOrder>
+	<Transactions>
+    <Transaction>1899-12-30 00:00:00.000.850,R:\Work\FindK\Highway_TooL\TMSCloudPkgDXE11.lib=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.435,=R:\Work\FindK\Highway_TooL\RAD\Cru_PROCESS.h</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.356,=R:\Work\FindK\Highway_TooL\RAD\Cru_SpaceLiST.cpp</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.632,=R:\Work\FindK\Highway_TooL\TMSCloudPkgDXE11.lib</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.363,=R:\Work\FindK\Highway_TooL\RAD\Cru_SpaceLiST.h</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.299,R:\Work\FindK\Highway_TooL\Unit1.h=R:\Work\FindK\Highway_TooL\pXLS_import.h</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.626,R:\Work\FindK\Highway_TooL\Unit1.h=R:\Work\FindK\Highway_TooL\pXLS_export.h</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.650,=C:\Program Files (x86)\tmssoftware\TMSCloud RSXE11\Win32\CloudBase.dcu</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.287,C:\Program Files (x86)\tmssoftware\TMSCloud RSXE11\Win32\CloudBase.dcu=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.626,R:\Work\FindK\Highway_TooL\Unit1.cpp=R:\Work\FindK\Highway_TooL\pXLS_export.cpp</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.840,=R:\Work\FindK\Highway_TooL\Unit1.cpp</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.299,R:\Work\FindK\Highway_TooL\Unit1.cpp=R:\Work\FindK\Highway_TooL\pXLS_import.cpp</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.759,=R:\Work\FindK\Highway_TooL\Unit1.cpp</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.299,R:\Work\FindK\Highway_TooL\Unit1.dfm=R:\Work\FindK\Highway_TooL\pXLS_import.dfm</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.641,C:\Program Files (x86)\tmssoftware\TMSCloud RSXE11\Win32\TMSCloudPkgDXE11.lib=</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.421,=R:\Work\FindK\Highway_TooL\RAD\Cru_PROCESS.cpp</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.626,R:\Work\FindK\Highway_TooL\Unit1.dfm=R:\Work\FindK\Highway_TooL\pXLS_export.dfm</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.974,=C:\Program Files (x86)\tmssoftware\TMSCloud RSXE11\Win32\TMSCloudPkgDXE11.lib</Transaction>
+  </Transactions>
+	<BT_BuildType>Debug</BT_BuildType>
+</BorlandProject>

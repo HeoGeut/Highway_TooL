@@ -1,0 +1,201 @@
+object PGM: TPGM
+  Left = 0
+  Top = 0
+  Caption = 'Cloud_Simon'
+  ClientHeight = 441
+  ClientWidth = 624
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object AdvFacebook1: TAdvFacebook
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackPort = 80
+    PersistTokens.Location = plIniFile
+    Scopes.Strings = (
+      'publish_actions'
+      'user_friends'
+      'manage_pages'
+      'user_posts'
+      'user_photos'
+      'user_about_me'
+      'user_hometown'
+      'user_location'
+      'user_likes'
+      'user_website'
+      'user_relationships'
+      'user_birthday'
+      'user_managed_groups'
+      'read_insights')
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Left = 40
+    Top = 32
+  end
+  object AdvGDrive1: TAdvGDrive
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackURL = 'http://127.0.0.1:8889/'
+    App.CallBackPort = 8889
+    PersistTokens.Location = plIniFile
+    Scopes.Strings = (
+      'https://www.googleapis.com/auth/drive'
+      'https://www.googleapis.com/auth/drive.file'
+      'https://www.googleapis.com/auth/userinfo.profile'
+      'https://www.googleapis.com/auth/userinfo.email')
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Left = 136
+    Top = 32
+  end
+  object AdvTwitter1: TAdvTwitter
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackURL = 'http://127.0.0.1'
+    App.CallBackPort = 80
+    PersistTokens.Location = plIniFile
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Left = 216
+    Top = 32
+  end
+  object AdvGCalendar1: TAdvGCalendar
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackURL = 'http://127.0.0.1:8888/'
+    App.CallBackPort = 8888
+    PersistTokens.Location = plIniFile
+    Scopes.Strings = (
+      'https://www.googleapis.com/auth/userinfo.profile'
+      'https://www.googleapis.com/auth/userinfo.email'
+      'https://www.googleapis.com/auth/gmail.send'
+      'https://www.googleapis.com/auth/calendar')
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Calendars = <>
+    Items = <>
+    Left = 304
+    Top = 32
+  end
+  object AdvGoogleLookupProvider1: TAdvGoogleLookupProvider
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackPort = 80
+    PersistTokens.Location = plIniFile
+    Left = 40
+    Top = 176
+  end
+  object AdvWebDav1: TAdvWebDav
+    Active = False
+    Left = 184
+    Top = 176
+  end
+  object AdvBulkSMS1: TAdvBulkSMS
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackPort = 80
+    PersistTokens.Location = plIniFile
+    Left = 304
+    Top = 176
+  end
+  object AdvYouTube1: TAdvYouTube
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackURL = 'http://127.0.0.1:8888/'
+    App.CallBackPort = 8888
+    PersistTokens.Location = plIniFile
+    Scopes.Strings = (
+      'https://www.googleapis.com/auth/userinfo.profile'
+      'https://www.googleapis.com/auth/userinfo.email'
+      'https://www.googleapis.com/auth/gmail.send'
+      'https://www.googleapis.com/auth/youtube.upload'
+      'https://www.googleapis.com/auth/youtube'
+      'https://www.googleapis.com/auth/youtubepartner')
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Left = 40
+    Top = 248
+  end
+  object AdvAmazonCloudDrive1: TAdvAmazonCloudDrive
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackPort = 80
+    PersistTokens.Location = plIniFile
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Left = 184
+    Top = 248
+  end
+  object AdvGMail1: TAdvGMail
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackURL = 'http://127.0.0.1:8888/'
+    App.CallBackPort = 8888
+    PersistTokens.Location = plIniFile
+    Scopes.Strings = (
+      'https://www.googleapis.com/auth/userinfo.profile'
+      'https://www.googleapis.com/auth/userinfo.email'
+      'https://www.googleapis.com/auth/gmail.send'
+      'https://mail.google.com/'
+      'https://www.googleapis.com/auth/gmail.modify'
+      'https://www.googleapis.com/auth/gmail.compose'
+      'https://www.googleapis.com/auth/gmail.readonly')
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Mails = <>
+    Left = 400
+    Top = 32
+  end
+  object AdvTrello1: TAdvTrello
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackPort = 80
+    PersistTokens.Location = plIniFile
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Member.Boards = <>
+    Left = 40
+    Top = 104
+  end
+  object AdvGAnalytics1: TAdvGAnalytics
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackURL = 'http://127.0.0.1:8888/'
+    App.CallBackPort = 8888
+    PersistTokens.Location = plIniFile
+    Scopes.Strings = (
+      'https://www.googleapis.com/auth/userinfo.profile'
+      'https://www.googleapis.com/auth/userinfo.email'
+      'https://www.googleapis.com/auth/gmail.send'
+      'https://www.googleapis.com/auth/analytics'
+      'https://www.googleapis.com/auth/analytics.readonly')
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    ErrorMessages.MetricCountMessage = 'Only 10 metrics are allowed in one call'
+    ErrorMessages.DimensionCountMessage = 'Only 7 dimensions are allowed in one call'
+    Left = 136
+    Top = 104
+  end
+  object AdvFirebase1: TAdvFirebase
+    Agent = 'Mozilla/5.001 (windows; U; NT4.0; en-US; rv:1.0) Gecko/25250101'
+    App.CallBackURL = 'http://127.0.0.1:8888/'
+    App.CallBackPort = 8888
+    PersistTokens.Location = plIniFile
+    Scopes.Strings = (
+      'https://www.googleapis.com/auth/userinfo.profile'
+      'https://www.googleapis.com/auth/userinfo.email'
+      'https://www.googleapis.com/auth/gmail.send'
+      'https://www.googleapis.com/auth/userinfo.email'
+      'https://www.googleapis.com/auth/firebase.database')
+    AuthFormSettings.Caption = 'Authorize'
+    AuthFormSettings.Width = 900
+    AuthFormSettings.Height = 600
+    Left = 256
+    Top = 104
+  end
+end

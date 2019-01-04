@@ -1,0 +1,129 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "Unit1.h"
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+#pragma package(smart_init)
+
+#pragma link "CloudBase"
+#pragma link "CloudBaseWin"
+#pragma link "CloudCustomFacebook"
+#pragma link "CloudCustomGCalendar"
+#pragma link "CloudCustomGDrive"
+#pragma link "CloudCustomGoogle"
+#pragma link "CloudCustomTwitter"
+#pragma link "CloudCustomYouTube"
+#pragma link "CloudFacebook"
+#pragma link "CloudGCalendar"
+#pragma link "CloudGDrive"
+#pragma link "CloudGoogleLookup"
+#pragma link "CloudGoogleWin"
+#pragma link "CloudSMS"
+#pragma link "CloudTwitter"
+#pragma link "CloudWebDav"
+#pragma link "CloudYouTube"
+#pragma link "CloudAmazonCloudDrive"
+#pragma link "CloudCustomAmazonCloudDrive"
+#pragma link "CloudCustomDataAdapter"
+#pragma link "CloudCustomDataSet"
+#pragma link "CloudCustomDataStore"
+#pragma link "CloudCustomFirebase"
+#pragma link "CloudCustomGAnalytics"
+#pragma link "CloudCustomGDataStore"
+#pragma link "CloudCustomGMail"
+#pragma link "CloudCustomMyCloudData"
+#pragma link "CloudCustomTrello"
+#pragma link "CloudDataAdapter"
+#pragma link "CloudDataSet"
+#pragma link "CloudFirebase"
+#pragma link "CloudGAnalytics"
+#pragma link "CloudGDataStore"
+#pragma link "CloudGMail"
+#pragma link "CloudMyCloudData"
+#pragma link "CloudMyCloudDataDataSet"
+#pragma link "CloudTrello"
+
+#pragma resource "*.dfm"
+//==============================================================================
+TPGM *PGM; __fastcall TPGM::TPGM(TComponent* Owner) : TForm(Owner) { }
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+// 함수 프로토타입
+
+void prePROCESS(void);
+
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+// 외부참조 전역변수
+
+Cru_SYSTEM xSYS;                                 // 시스템 개체                .
+
+Cru_SCRiPT xSCR;                                 // 스크립트 개체              .
+
+int Search_FOLDER_FiLEcnt;
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+void __fastcall TPGM::FormCreate(TObject *Sender)
+{
+    xSYS.FLAG[f_PGM_START] = 0x1;
+    xSYS.FLAG[f_QUiT]      = 0x0;
+}
+//---------------------------------------------------------------------------
+void __fastcall TPGM::FormPaint(TObject *Sender)
+{
+    if(xSYS.FLAG[f_PGM_START])
+    {
+        xSYS.FLAG[f_PGM_START] = 0x0;
+        /*                     */
+        /**/  prePROCESS();  /**/
+        /*                     */
+    }
+}
+//---------------------------------------------------------------------------
+void __fastcall TPGM::FormDestroy(TObject *Sender)
+{
+    // 실행종료 플랙
+    xSYS.FLAG[f_QUiT] = 0x1;
+
+    // 사운드 종결
+    xSND.FiNAL();
+
+    //▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧
+    // 크리티칼섹션 삭제
+    DeleteCriticalSection(&core_CS);
+
+    // 쓰레드 종료
+    core_RUN->Terminate();
+    //▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧
+}
+//==============================================================================
+void prePROCESS(void)
+{
+    //  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■ .
+    //■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■
+    //  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■ .
+
+    /*                      */
+    /*  ★ 시스템 초기화    */
+    /*                      */
+    /**/                  /**/
+    /**/  xSYS.Reset();   /**/
+    /**/                  /**/
+    /*                      */
+    if(xSYS.FLAG[f_QUiT]) return;
+
+    //  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■ .
+    //■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■
+    //  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■  ■ .
+}
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+

@@ -1,0 +1,9 @@
+Find_1= "³×ÀÌºñ", 1, 0
+Find_2= 17_01_02, 18_11_24, 0
+Find_3= 0
+Find_4= 0001, 0006
+
+CheckTreeNode_1= 0, 1, 0, 0, 0, 1, 1, 1, 1
+CheckTreeNode_2= 0, 1, 0, 1
+CheckTreeNode_3= 0, 0, 1, 1, 1
+CheckTreeNode_4= 0, 1, 0, 1, 1, 1

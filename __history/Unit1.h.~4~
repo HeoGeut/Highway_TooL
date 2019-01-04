@@ -1,0 +1,74 @@
+//---------------------------------------------------------------------------
+
+#ifndef Unit1H
+#define Unit1H
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "CloudBase.hpp"
+#include "CloudBaseWin.hpp"
+#include "CloudCustomFacebook.hpp"
+#include "CloudCustomGCalendar.hpp"
+#include "CloudCustomGDrive.hpp"
+#include "CloudCustomGoogle.hpp"
+#include "CloudCustomTwitter.hpp"
+#include "CloudCustomYouTube.hpp"
+#include "CloudFacebook.hpp"
+#include "CloudGCalendar.hpp"
+#include "CloudGDrive.hpp"
+#include "CloudGoogleLookup.hpp"
+#include "CloudGoogleWin.hpp"
+#include "CloudSMS.hpp"
+#include "CloudTwitter.hpp"
+#include "CloudWebDav.hpp"
+#include "CloudYouTube.hpp"
+#include "CloudAmazonCloudDrive.hpp"
+#include "CloudCustomAmazonCloudDrive.hpp"
+#include "CloudCustomDataAdapter.hpp"
+#include "CloudCustomDataSet.hpp"
+#include "CloudCustomDataStore.hpp"
+#include "CloudCustomFirebase.hpp"
+#include "CloudCustomGAnalytics.hpp"
+#include "CloudCustomGDataStore.hpp"
+#include "CloudCustomGMail.hpp"
+#include "CloudCustomMyCloudData.hpp"
+#include "CloudCustomTrello.hpp"
+#include "CloudDataAdapter.hpp"
+#include "CloudDataSet.hpp"
+#include "CloudFirebase.hpp"
+#include "CloudGAnalytics.hpp"
+#include "CloudGDataStore.hpp"
+#include "CloudGMail.hpp"
+#include "CloudMyCloudData.hpp"
+#include "CloudMyCloudDataDataSet.hpp"
+#include "CloudTrello.hpp"
+#include <Data.DB.hpp>
+#include <Datasnap.DBClient.hpp>
+#include <System.Generics.Collections.hpp>
+//---------------------------------------------------------------------------
+class TPGM : public TForm
+{
+__published:	// IDE-managed Components
+    TAdvFacebook *AdvFacebook1;
+    TAdvGDrive *AdvGDrive1;
+    TAdvTwitter *AdvTwitter1;
+    TAdvGCalendar *AdvGCalendar1;
+    TAdvGoogleLookupProvider *AdvGoogleLookupProvider1;
+    TAdvWebDav *AdvWebDav1;
+    TAdvBulkSMS *AdvBulkSMS1;
+    TAdvYouTube *AdvYouTube1;
+    TAdvAmazonCloudDrive *AdvAmazonCloudDrive1;
+    TAdvGMail *AdvGMail1;
+    TAdvTrello *AdvTrello1;
+    TAdvGAnalytics *AdvGAnalytics1;
+    TAdvFirebase *AdvFirebase1;
+private:	// User declarations
+public:		// User declarations
+    __fastcall TPGM(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TPGM *PGM;
+//---------------------------------------------------------------------------
+#endif

@@ -1,0 +1,73 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "Unit1.h"
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+#pragma package(smart_init)
+
+#pragma link "CloudBase"
+#pragma link "CloudBaseWin"
+#pragma link "CloudCustomFacebook"
+#pragma link "CloudCustomGCalendar"
+#pragma link "CloudCustomGDrive"
+#pragma link "CloudCustomGoogle"
+#pragma link "CloudCustomTwitter"
+#pragma link "CloudCustomYouTube"
+#pragma link "CloudFacebook"
+#pragma link "CloudGCalendar"
+#pragma link "CloudGDrive"
+#pragma link "CloudGoogleLookup"
+#pragma link "CloudGoogleWin"
+#pragma link "CloudSMS"
+#pragma link "CloudTwitter"
+#pragma link "CloudWebDav"
+#pragma link "CloudYouTube"
+#pragma link "CloudAmazonCloudDrive"
+#pragma link "CloudCustomAmazonCloudDrive"
+#pragma link "CloudCustomDataAdapter"
+#pragma link "CloudCustomDataSet"
+#pragma link "CloudCustomDataStore"
+#pragma link "CloudCustomFirebase"
+#pragma link "CloudCustomGAnalytics"
+#pragma link "CloudCustomGDataStore"
+#pragma link "CloudCustomGMail"
+#pragma link "CloudCustomMyCloudData"
+#pragma link "CloudCustomTrello"
+#pragma link "CloudDataAdapter"
+#pragma link "CloudDataSet"
+#pragma link "CloudFirebase"
+#pragma link "CloudGAnalytics"
+#pragma link "CloudGDataStore"
+#pragma link "CloudGMail"
+#pragma link "CloudMyCloudData"
+#pragma link "CloudMyCloudDataDataSet"
+#pragma link "CloudTrello"
+
+#pragma resource "*.dfm"
+//==============================================================================
+TPGM *PGM; __fastcall TPGM::TPGM(TComponent* Owner) : TForm(Owner) { }
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+// 함수 프로토타입
+
+void prePROCESS(void);
+
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+// 외부참조 전역변수
+
+Cru_SYSTEM xSYS;                                 // 시스템 개체                .
+
+Cru_SCRiPT xSCR;                                 // 스크립트 개체              .
+
+int Search_FOLDER_FiLEcnt;
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+

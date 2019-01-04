@@ -1,0 +1,161 @@
+#pragma once
+
+#ifndef __Cru_SYSTEM_H
+#define __Cru_SYSTEM_H
+
+// Pre-Compiled 헤더링크
+//#include "./RAD/Pre_Compiled.h"
+
+    #include "./RAD/Cru_DEFiNE.h"
+
+    #include "./RAD/Sys_DEBUG.h"
+    #include "./RAD/Sys_PARSiNG.h"
+    #include "./RAD/Sys_TiMER.h"
+
+    #include "./RAD/Cru_SCRiPT.h"
+
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+// 시스템 클래스
+class Cru_SYSTEM
+{                                        
+public:
+
+    /* 플랙 */
+    int FLAG[MAX_FLAG];                          // 상태플랙 메모리            .
+
+    /* 화면 정보 */
+    int uSCNx, uSCNy;                            // 화면위치                   .
+    int uSCNw, uSCNh;                            // 화면크기                   .
+    int zWiN_Center;                             // 윈도우 화면중앙표시 플랙   .
+
+    int CAPt;                                    // 윈도우 캡션두께
+    int WNDtx, WNDty;                            // 윈도우 프레임두께
+
+    /* 디렉토리 */
+    char runDiR[256],                            // PGM 실행 - 현재경로        .
+         resDiR[256];                            // 리소스   - 경로            .
+
+    /* 스크립트 */
+    int zALREADY_Kernel_iSQrun,                  // Kernel.iSQ 를 이미 해독인지 플랙
+        zALREADY_Game_iSQrun,                    // Game.iSQ   를 이미 해독인지 플랙
+        zEventSKiP_iSQrun;                       // 이벤트내용 인가 ? 플랙
+
+                                                 //                            .
+    char SystemSCR_FiLE[256];                    // 시스템 설정파일            .
+                                                 //                            .
+
+    /* 타이밍 */
+                                                 //=====================================
+    Cru_TiCK tm_MAiN;                            // 메인커널 Tick                      .
+    int clk,                                     // 메인커널클럭                       .
+        FLiPFLOP,                                // 메인커널클럭   플립플롭            .
+        rCLKdir;                                 // 메인커널클럭用 플립플롭 다이렉션   .
+                                                 //=====================================
+    int tm_FLiPFLOP,                             // 순차커널틱   플립플롭 카운터       .
+        tm_rCLKdir;                              // 순차커널틱用 플립플롭 다이렉션     .
+                                                 //=====================================
+
+    /* FPS */
+    float FPS_Frames;                            // 현재 프레임수              .
+    float FPS_FCNT;                              // 프레임 카운터              .
+
+    float FPS_E_Tm;                              // 이전 ↔ 현재 프레임 시간차 .
+    float FPS_C_Tm;                              // 현재 프레임 시간           .
+
+    /* 마우스 */
+    POINT MSE;                                   // 마우스 정보 스트럭처       .
+
+                                       //                                      .
+    int   MSEx, MSEy,                  // CRT 창, 마우스 위치                  .
+                                       //                                      .
+          old_MSEx, old_MSEy,          // 바로이전의 CRT 창, 마우스 절대위치   .
+                                       //                                      .
+          MSEdx, MSEdy,                // CRT 창, 마우스 상대적 벡터이동량     .
+                                       //                                      .
+
+          kCTRL,                                 // <CTRL>  버튼값 !           .
+          kALT,                                  // <ALT>   버튼값 !           .
+          kSHT;                                  // <SHT>   버튼값 !           .
+
+    bool  MMM_mLBTN,                             // 대기중인 <mLBTN>    플래그 !
+          MMM_mRBTN,                             // 대기중인 <mRBTN>    플래그 !
+          MMM_kCTRL,                             // 대기중인 <CTRL>     플래그 !
+          MMM_kALT,                              // 대기중인 <ALT>      플래그 !
+          MMM_kSHT;                              // 대기중인 <SHT>      플래그 !
+
+    int   mLBTN, mMBTN, mRBTN,                         // 마우스 버튼값              .
+          old_mLBTN, old_mMBTN, old_mRBTN,             // 바로이전의 마우스 버튼값   .
+          mLBTN_CLiCK, mMBTN_CLiCK, mRBTN_CLiCK,       // 마우스 버튼 순간클릭 - 플랙.
+          mLBTN_RELEASE, mMBTN_RELEASE, mRBTN_RELEASE, // 마우스 버튼 순간릴리즈 -플랙
+          MSEmove,                                     // 마우스가 움직였나 ?        .
+
+          mWHEEL,                                      // 마우스 휠 벡터       .
+
+          eMODE;                                 // 편집모드 로테이션          .
+                                                 //                            .
+                                                 //  0 = 모드없슴              .
+                                                 //  1 = 오브젝트 편집 모드    .
+                                                 //                            .
+    /* 키보드 */
+    int iPT[256];                                // 키보드 - Matching 트랩값   .
+    int MMM[256];                                // 중복입력방지 用 - 플랙     .
+    Cru_TiCK kTM[256];                           // 키 중복입력 간격시간 Tick  .
+
+    /* 키보드상태 테이블 */
+    unsigned char kbd_STATUS[256];               // 키보드상태 테이블 (256 상태)
+
+    /* 커맨드라인 */
+                                                 //                            .
+    char  cmd_PROMPT[100];                       // 프롬프트                   .
+    char  cmd_HiSTORY[101][300];                 // 히스토리 커맨드            .
+    char  cmd_CMD[300];                          // 현재 커맨드                .
+                                                 //                            .
+    int   cmd_PMTx, cmd_PMTy,                    // 프롬프트 위치              .
+          cmd_C, cmd_Cw, cmd_Ch,                 // 커맨드 문자 정보           .
+          cmd_MAXHiS,                            // 히스토리 저장라인수        .
+          cmd_HiSPOS,                            // 히스토리 참조위치          .
+          cmd_MAXLEN,                            // 커맨드 문자열 최대길이     .
+          cmd_LEN,                               // 커맨드 문자열 길이         .
+          cmd_POS;                               // 커맨드 문자열 커서위치     .
+
+    ///////
+    Cru_SYSTEM() { uSCNx = -1; uSCNy = -1; };
+    ~Cru_SYSTEM() {};
+
+    void Reset(void);                            // 시스템 리셋                .
+    void iNiT_3D(void);                          // 3D 초기화                  .
+
+        void SET_DiRECTORY(void);                // 디렉토리 정의              .
+        void KERNEL_CLOCK_Generator(void);       // 커널클럭 - 제너레이터      .
+
+        char *sYMDHMS(void);                     // 현재날짜와 시각을 문자열로 리턴 (표준출력用)
+        char *fYMDHMS(void);                     // 현재날짜와 시각을 문자열로 리턴 (파일스펙用)
+
+        void FPS_iNiT(void);                     // FPS 초기화                 .
+        void FPS_CALC(void);                     // FPS 계산                   .
+
+                                                 //                            .
+        void iNPUT(void);                        // 입력처리                   .
+                                                 //                            .
+        void Mouse_CONTROL(void);                // 마우스 컨트롤러            .
+        void Keyboard_CONTROL(void);             // 키보드 컨트롤러            .
+        void CommandLine_KeyStroke(void);        // 커맨드라인 특수키 처리     .
+                                                 //                            .
+        void ESCKEY_Action(void);                // <ESC> 눌렀을 때 액션       .
+
+    ///////
+    void vDEBUG_FPS(void);                       // 디버깅정보 표시 ( FPS 정보 )
+    void vDEBUG_KNL(void);                       // 디버깅정보 표시 ( 커널정보 )
+    void vDEBUG_PGM(void);                       // 디버깅정보 표시 ( PGM 정보 )
+    ///////
+    void vCOMMAND(void);                         // 커맨드라인 표시            .
+
+    void vHELP(void);                            // 도움말 표시                .
+};
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+#endif
+

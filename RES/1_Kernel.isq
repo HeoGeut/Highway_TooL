@@ -1,0 +1,38 @@
+//▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧
+// ● 디버깅 정보표시
+
+zDEBUG = 1
+
+//▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧
+// ● 화면모드 & 해상도
+
+// 정의된 윈도우 위치
+/WiN_xy        = 10, 50
+
+//▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧
+
+// 시트칼럼폭 정의
+SHT_col_LENs= 100
+
+//
+// DB 테이블 칼럼폭 정의
+//
+//DB_col_LENs= 테이블이름, 칼럼개수, 칼럼폭 리스트 ...
+
+DB_col_LENs= user,  10, 50, 50, 40, 50, 150, 40, 120, 120, 30, 100
+
+DB_col_LENs= grade,  7, 30, 40, 150, 50, 50, 50, 50
+
+DB_col_LENs= op_keyfilter,     3, 50, 500, 100
+DB_col_LENs= foreign_mktlist,  3
+DB_col_LENs= pa_catelist,      6
+DB_col_LENs= corp_catelist,    6
+DB_col_LENs= name_keyfilter,   3, 50, 500, 100
+
+DB_col_LENs= ddm_cust_infolist,  9
+DB_col_LENs= b2b_cust_infolist, 14
+DB_col_LENs= hyb_cust_infolist,  9
+
+DB_col_LENs= model_infolist,  9
+
+//▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧▧

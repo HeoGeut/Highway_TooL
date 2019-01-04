@@ -1,0 +1,45 @@
+// 메인테이블 칼럼 클리어
+CLEAR_DB_col_main
+
+// 메인테이블 칼럼정의
+// DB_col_main = 필드순번, 표시여부, 칼럼폭, 필드영문이름, 필드한글이름
+
+DB_col_main =  0, 1,  25, (chk),        (출력)
+DB_col_main =  1, 1,  50, idx,          인덱스
+DB_col_main = 42, 1,  70, work_condi,   작업상태
+DB_col_main = 43, 1,  70, app_condi,    승인상태
+DB_col_main = 35, 1,  70, buy_type,     구매유형
+DB_col_main =  2, 1, 100, sel_date,     선정일자
+DB_col_main = 10, 1, 100, brd_name,     브랜드
+DB_col_main = 49, 1,  70, acc_id,       계정ID
+DB_col_main =  3, 1,  80, sel_cod,      판매자_관리코드
+DB_col_main = 14, 1, 200, kr_prd_name,  상품명
+DB_col_main =  6, 1, 150, op_1,         옵션(색상)
+DB_col_main =  7, 1, 150, op_2,         옵션(사이즈)
+DB_col_main = 18, 1,  90, sell_pri,     판매가
+DB_col_main = 29, 1, 100, lastmod_date, 수정일자
+DB_col_main = 46, 1,  80, memo1,        메모1
+DB_col_main = 47, 1,  80, memo2,        메모2
+DB_col_main = 48, 1,  80, memo3,        메모3
+
+DB_col_main = 11, 0, 100, cn_mkt_name,  중국마켓명
+DB_col_main = 13, 0,  50, cate_1,       카테고리
+DB_col_main = 15, 0,  50, dlv_chg_pli,  배송비 정책
+DB_col_main = 16, 0,  90, cny_pri,      구매가격(￥)
+DB_col_main = 17, 0,  90, krw_pri,      구매가격(원)
+DB_col_main = 19, 0,  90, dlv_chg,      배송비
+DB_col_main = 20, 0,  50, prd_reg_chk,  등록여부
+DB_col_main = 21, 0,  50, mrg_ex,       예상마진
+DB_col_main = 22, 0,  50, mrg_pct,      마진율 (20~30%)
+DB_col_main = 23, 0,  30, min_qty,      최소수량
+DB_col_main = 24, 0, 100, re_kwd,       키워드
+DB_col_main = 28, 0,  80, cate_2,       한글카테고리
+DB_col_main = 30, 0, 100, mkt_name,     등록마켓
+DB_col_main = 31, 0,  70, mkt_id,       계정
+DB_col_main = 32, 0,  50, cate_3,       카테고리(자사몰)
+DB_col_main = 34, 0,  80, prd_condi,    상품상태
+DB_col_main = 36, 0,  50, cust_info,    거래처정보
+DB_col_main = 44, 0,  50, sale_condi,   판매상태(자사몰)
+
+// 기본칼럼 리셋
+DB_default_EXCEL_FLDs = 1, 42, 43, 35, 2, 10, 49, 3, 14, 6, 7, 18, 29, 46, 47, 48

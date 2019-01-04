@@ -1,0 +1,3097 @@
+#include "./RAD/Cru_HEADER.h"
+
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+// 외부참조 전역변수
+extern HWND       g_hWnd;                        // 메인 윈도핸들              .
+
+extern Cru_SCRiPT xSCR;                          // 스크립트 개체
+
+extern Cru_SYSTEM    xSYS;                       // 시스템 개체
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+void vERROR(DWORD ErrCODE)
+{
+     LPVOID lpMsgBuf;
+     //▩▩▩▩▩▩▩
+     if(!FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                       FORMAT_MESSAGE_FROM_SYSTEM |
+                       FORMAT_MESSAGE_IGNORE_INSERTS,
+                       NULL,
+                       ErrCODE,
+                       MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                       (LPTSTR) &lpMsgBuf,
+                       0,
+                       NULL ))
+     {
+         // 에러핸들링
+         return;
+     }
+     //▩▩▩▩▩▩▩
+     // 시스템 디폴트 언어로, 표시
+     ::MessageBox(NULL, (LPCTSTR)lpMsgBuf, "Error", MB_OK | MB_ICONINFORMATION );
+     //printf("%s ", (LPCTSTR)lpMsgBuf);
+     //▩▩▩▩▩▩▩
+     LocalFree( lpMsgBuf );
+}
+//==============================================================================
+int   mSGN(int n) { int r; r = 000; r = (000<n)? +1 : r; r = (000>n)? -1 : r; return r;}
+//==============================================================================
+float mSiN(float a)
+{
+    return sin(mRAD*a);
+}
+//==============================================================================
+float mCOS(float a)
+{
+    return cos(mRAD*a);
+}
+//==============================================================================
+float mTAN(float a)
+{
+    return tan(mRAD*a);
+}
+//==============================================================================
+void sYMDHMS(char *iDT)
+{
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+
+    sfSTR(iDT, "%04d%02d%02d_%02d:%02d:%02d",
+        st.wYear,
+        st.wMonth,
+        st.wDay,
+        st.wHour,
+        st.wMinute,
+        st.wSecond);
+}
+//==============================================================================
+void fYMDHMS(char *iDT)
+{
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+
+    sfSTR(iDT, "%04d%02d%02d_%02d%02d%02d",
+        st.wYear,
+        st.wMonth,
+        st.wDay,
+        st.wHour,
+        st.wMinute,
+        st.wSecond);
+}
+//==============================================================================
+int keep_KEY(char iKEY)
+{
+    int rtn;
+    //                                                                         .
+
+    rtn = xSYS.iPT[iKEY];
+
+    //                                                                         .
+    return rtn;
+}
+//==============================================================================
+int cut_KEY(char iKEY)
+{
+    int rtn;
+    //                                                                         .
+
+    rtn = (!xSYS.MMM[iKEY] && xSYS.iPT[iKEY]);
+
+    if(rtn)
+    {
+        xSYS.MMM[iKEY] = 0x1;
+    }
+
+    //                                                                         .
+    return rtn;
+}
+//==============================================================================
+int Cvt_KBD(char *iKBD)
+{
+    int rtn;
+    //▣==▣==▣==▣==▣==▣==▣==▣==▣==▣
+    if(iKBD[0]=='@')
+    {
+        switch(iKBD[1])
+        {
+        case 'U': rtn = VK_UP;    break;
+        case 'D': rtn = VK_DOWN;  break;
+        case 'L': rtn = VK_LEFT;  break;
+        case 'R': rtn = VK_RIGHT; break;
+        }
+    }
+    else
+    {
+        rtn = iKBD[0];
+    }
+    //▣==▣==▣==▣==▣==▣==▣==▣==▣==▣
+    return rtn;
+}
+//==============================================================================
+// char 을 UTF-8 로 변환
+char *Cvt_CHAR_UTF8(char *iCHAR)
+{
+    char oSTR[256];
+    wchar_t uSTR[256];
+    int uLen, Len;
+    ///////
+    uLen = MultiByteToWideChar(CP_ACP,0, iCHAR, strlen(iCHAR), uSTR, sizeof(uSTR));
+    Len  = WideCharToMultiByte(CP_UTF8, 0, uSTR, uLen, (LPSTR) oSTR, sizeof(oSTR), NULL, NULL);
+
+    MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, iCHAR, strlen(iCHAR), uSTR, Len);
+    WideCharToMultiByte(CP_UTF8, 0, (LPWSTR) uSTR, -1, (LPSTR) oSTR, Len, NULL, NULL);
+    oSTR[Len] = '\0';
+
+    ///////
+    return oSTR;
+}
+//==============================================================================
+// UTF-8 을 char 로 변환
+char *Cvt_UTF8_CHAR(char *iUTF8)
+{
+    int Len,uLen;
+    char mSTR[256];
+    char oSTR[256];
+    wchar_t uSTR[256];
+    ///////
+    strcpy(mSTR, (char *) iUTF8);
+    wcscpy(uSTR, (LPWSTR) iUTF8);
+
+    uLen = MultiByteToWideChar(CP_UTF8, 0, mSTR, strlen(mSTR), uSTR, sizeof(uSTR));
+    Len = WideCharToMultiByte(CP_ACP, 0, uSTR, uLen, (LPSTR) oSTR, sizeof(oSTR), NULL, NULL);
+    oSTR[Len] = '\0';
+
+    ///////
+    return oSTR;
+}
+//==============================================================================
+void UTF8_fprintf(FILE *f, char *iCHAR)
+{
+    char uSTR[1024];
+
+    cpSTR(uSTR, Cvt_CHAR_UTF8(iCHAR));
+    fprintf(f, uSTR);
+}
+//==============================================================================
+int PARSE_List(char *nSTR,
+               char *iSEPA,
+               int   onDTA[],
+               float ofDTA[],
+               char  dTYPE[])
+{
+    int rtn;
+
+    int n,p,k;
+    int pEXiT;
+
+    char wSTR[256], jSTR[256], dSTR[256];
+
+    char Jam;
+
+    cpSTR(wSTR, LTRiM_String(nSTR));
+    cpSTR(jSTR, RTRiM_String(wSTR));
+    TRiM_String(jSTR);
+
+    memset(onDTA, 000, sizeof(onDTA));
+    memset(ofDTA, 000, sizeof(ofDTA));
+    memset(dTYPE, 000, sizeof(dTYPE));
+    //                                                                         .
+    n = 000;
+    p = 000;
+    k = 000;
+
+    pEXiT = 0x0;
+
+    //■■■■■■■
+    while(!pEXiT)
+    {
+        Jam = jSTR[n];
+        ///////
+        if(Jam==iSEPA[0])
+        {
+            ++k;
+            dSTR[p] = '\0';
+            p=000;
+
+
+// 토큰의 데이타 타입판별
+if(000 < fdSTR(dSTR, "."))
+{
+    // 실수
+    ofDTA[k] = atof(dSTR);
+    onDTA[k] = 000;
+    dTYPE[k] = 'f';
+}
+else
+{
+    // 정수
+    onDTA[k] = atoi(dSTR);
+    ofDTA[k] = 000;
+    dTYPE[k] = 'n';
+}
+
+
+        }
+        else
+        {
+            dSTR[p] = Jam;
+            ++p;
+        }
+        ///////
+
+        pEXiT = (Jam=='\0');
+
+        ++n;
+    }
+    //■■■■■■■
+
+    //                                                                         .
+    if(000 < p)
+    {
+        ++k;
+        dSTR[p] = '\0';
+        p=000;
+        onDTA[k] = atoi(dSTR);
+    }
+
+
+// 토큰의 데이타 타입판별
+if(000 < fdSTR(dSTR, "."))
+{
+    // 실수
+    ofDTA[k] = atof(dSTR);
+    onDTA[k] = 000;
+    dTYPE[k] = 'f';
+}
+else
+{
+    // 정수
+    onDTA[k] = atoi(dSTR);
+    ofDTA[k] = 000;
+    dTYPE[k] = 'n';
+}
+
+
+    rtn = k;
+    //                                                                         .
+    return rtn;
+}
+//==============================================================================
+char *MAKE_nLiST(int   nDTA[],
+                 char *iSEPA,
+                 int   iDTAcnt)
+{
+    char rtn[256];
+    char jSTR[256];
+
+    int n;
+    ///////
+    for(n=1;n<=iDTAcnt;n++)
+    {
+        sfSTR(jSTR, "%d", nDTA[n]);
+
+        if(n==1) cpSTR(rtn, jSTR);
+        else     adSTR(rtn, jSTR);
+
+        if(n<iDTAcnt) adSTR(rtn, iSEPA);
+    }
+    ///////
+    TRiM_String(rtn);
+    return rtn;
+}
+//==============================================================================
+char *MAKE_fLiST(float fDTA[],
+                 char *iSEPA,
+                 int   iDTAcnt,
+                 int   iTRUNC)
+{
+    char rtn[256];
+    char jSTR[256];
+    char fmt[256];
+
+    int n;
+    ///////
+    cpSTR(fmt, "%0.");
+    sfSTR(jSTR, "%d", iTRUNC);
+    adSTR(fmt, jSTR);
+    adSTR(fmt, "f");
+    ///////
+    for(n=1;n<=iDTAcnt;n++)
+    {
+        sfSTR(jSTR, fmt, fDTA[n]);
+
+        if(n==1) cpSTR(rtn, jSTR);
+        else     adSTR(rtn, jSTR);
+
+        if(n<iDTAcnt) adSTR(rtn, iSEPA);
+    }
+    ///////
+    TRiM_String(rtn);
+    return rtn;
+}
+//==============================================================================
+int nFiND(int iN, int iDTA[], int iDTAcnt)
+{
+    int n,rtn;
+    ///////
+    rtn = 000;
+    for(n=1;n<=iDTAcnt;n++)
+    {
+        if(iN==iDTA[n])
+        {
+            rtn = n;
+            break;
+        }
+    }
+    ///////
+    return rtn;
+}
+//==============================================================================
+void TOKEN_Json(char  *fNAME,
+                int   *oLineCNT,
+                char  oorgSTR[][64],
+                char  ojTEXT[][64],
+                char  oCMD[][64],
+                DWORD onDTA[],
+                char  osDTA[][64])
+{
+    FILE *Fr;
+    int n,p,k,d;
+    int Lcnt,idx,Len;
+
+    int token;
+
+    int zCMD, zCOLON, zDTA;
+    char Jam;
+
+    char fSTR[256], dSTR[256];
+
+    char rSTR[64], jSTR[64], kSTR[64], cSTR[64];
+    //                                                                         .
+    // ♣ Json 파일로딩
+    cpSTR(fSTR, xSYS.resDiR);
+    adSTR(fSTR, "Game/");
+    adSTR(fSTR, fNAME);
+
+    Fr = fopen(fSTR, "rb");
+
+    Lcnt = 001;
+    while(!feof(Fr))
+    {
+        jTextFile_ReadLiNE(Fr, rSTR);
+
+        cpSTR(jSTR, LTRiM_String(rSTR));
+        cpSTR(rSTR, RTRiM_String(jSTR));
+
+        cpSTR(ojTEXT[Lcnt], Cvt_UTF8_CHAR(rSTR));
+
+        cpSTR(oorgSTR[Lcnt], ojTEXT[Lcnt]);
+
+        LOCASE_String(ojTEXT[Lcnt]);
+
+        ++Lcnt;
+    }
+
+    fclose(Fr);
+
+    *oLineCNT = Lcnt;
+    //                                                                         .
+    // ♣ 토큰처리
+    idx = 000;
+
+    for(n=1;n<=Lcnt;n++)
+    {
+        cpSTR(jSTR, ojTEXT[n]);
+
+        p = fdSTR(jSTR, ":");
+
+        if(000<p)
+        {
+            ++idx;
+
+            Len = lenSTR(jSTR);
+
+            // 명령
+            subcpSTR(cSTR, jSTR, 1, p-2);
+
+            cpSTR(oCMD[idx], EXCLUDE_String(cSTR, "\""));
+
+            // 값토큰
+            subcpSTR(kSTR, jSTR, p+1, Len-p);
+
+            // 끝에 콤마가 있으면 지운다
+            k = lenSTR(kSTR);
+
+            if(000<k)
+            {
+
+                if(kSTR[k-1]==',')
+                {
+                    kSTR[k-1] = '\0';
+                }
+
+                d = fdSTR(kSTR, "\"");
+
+                //■■■■■■■
+                if(000<d)
+                {
+                    // 값토큰 : 문자열
+                    cpSTR(jSTR, LTRiM_String(kSTR));
+                    cpSTR(kSTR, RTRiM_String(jSTR));
+
+                    cpSTR(osDTA[idx], EXCLUDE_String(kSTR, "\""));
+                }
+                else
+                {
+                    // 값토큰 : 숫자
+                    onDTA[idx] = atoi(kSTR);
+                }
+                //■■■■■■■
+            }
+        }
+
+    }
+    //                                                                         .
+}
+//==============================================================================
+int CHECK_FileEXiST(char *iPATH)
+{
+    int ret;
+
+    HANDLE hFind;
+
+    WIN32_FIND_DATAA fd;
+
+    hFind = FindFirstFileA((LPCSTR)iPATH, &fd);
+
+    if(hFind==INVALID_HANDLE_VALUE)
+    {
+        ret = 0x0;
+    }
+    else
+    {
+        ret = 0x1;
+    }
+
+    FindClose(hFind);
+    return ret;
+}
+//==============================================================================
+int GET_FileLiSTs(char *iDiR, char *iWiLD, char *iSORTm, char oLiST[][64])
+{
+    int n, Fcnt, fEXiST;
+
+    WIN32_FIND_DATAA FileData;
+    HANDLE hFind;
+
+    char fSTR[256], uSTR[256];
+    char fNAME[1001][64];
+    //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+    // ◈ 입력디렉토리, 파일 모두읽기
+    sfSTR((char *) fSTR, (char *) "%s/%s", iDiR, iWiLD);
+
+    hFind = FindFirstFileA((LPCSTR)fSTR, &FileData);
+    if(INVALID_HANDLE_VALUE==hFind) { FindClose(hFind); return 000; }
+    //■■■■■■■
+    Fcnt = 000;
+    fEXiST = 0x1;
+
+        /*▩▩▩*/
+        while(fEXiST)
+        {
+            // ● 파일만 검출
+//            if(FileData.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE)
+            {
+                cpSTR(fNAME[Fcnt++], FileData.cFileName);
+            }
+
+            fEXiST = FindNextFileA(hFind, &FileData);
+        }
+        /*▩▩▩*/
+
+    FindClose(hFind);
+    //■■■■■■■
+
+    // ◈ 파일목록 정렬
+    cpSTR(uSTR, iSORTm);
+    UPCASE_String(uSTR);
+
+         if(eqSTR(uSTR, "A")) qsort(fNAME, Fcnt, sizeof(fNAME[000]), A_Sort_FUNC);
+    else if(eqSTR(uSTR, "D")) qsort(fNAME, Fcnt, sizeof(fNAME[000]), D_Sort_FUNC);
+
+    // ◈ 0번째 첨자에는, 입력디렉토리 + 와일드카드가 들어간다
+    cpSTR(oLiST[000], fSTR);
+
+        for(n=1;n<=Fcnt;n++)
+        {
+            cpSTR(oLiST[n], fNAME[n-1]);
+        }
+
+    //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+    return Fcnt;
+}
+//==============================================================================
+int GET_DirectoryLiSTs(char *iDiR, char *iWiLD, char *iSORTm, char oLiST[][64])
+{
+    int n, Dcnt, dEXiST;
+
+    WIN32_FIND_DATAA FileData;
+    HANDLE hFind;
+
+    char dSTR[256], uSTR[256];
+    char dNAME[1001][64];
+    //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+    // ◈ 입력디렉토리, 파일 모두읽기
+    sfSTR((char *) dSTR, (char *) "%s/%s", iDiR, iWiLD);
+
+    hFind = FindFirstFileA((LPCSTR)dSTR, &FileData);
+    if(INVALID_HANDLE_VALUE==hFind) { FindClose(hFind); return 000; }
+    //■■■■■■■
+    Dcnt = 000;
+    dEXiST = 0x1;
+
+    /*▩▩▩*/
+    while(dEXiST)
+    {
+        // ● 디렉토리만 검출
+        if(FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+        {
+            // 자기자신 경로와 부모경로는 제외시킴
+            if(!eqSTR(FileData.cFileName, ".")
+            && !eqSTR(FileData.cFileName, ".."))
+            {
+                cpSTR(dNAME[Dcnt++], FileData.cFileName);
+            }
+        }
+
+        dEXiST = FindNextFileA(hFind, &FileData);
+    }
+    /*▩▩▩*/
+
+    FindClose(hFind);
+    //■■■■■■■
+
+    // ◈ 파일목록 정렬
+    cpSTR(uSTR, iSORTm);
+    UPCASE_String(uSTR);
+
+         if(eqSTR(uSTR, "A")) qsort(dNAME, Dcnt, sizeof(dNAME[000]), A_Sort_FUNC);
+    else if(eqSTR(uSTR, "D")) qsort(dNAME, Dcnt, sizeof(dNAME[000]), D_Sort_FUNC);
+
+    // ◈ 0번째 첨자에는, 입력디렉토리 + 와일드카드가 들어간다
+    cpSTR(oLiST[000], dSTR);
+
+        for(n=1;n<=Dcnt;n++)
+        {
+            cpSTR(oLiST[n], dNAME[n-1]);
+        }
+
+    //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+    return Dcnt;
+}
+//==============================================================================
+/*
+void Search_FOLDER(char *iFOLDER, TMemo *iMEMO)
+{
+    TSearchRec SR;
+    char cSTR[256];
+
+    //                                                                         .
+    sfSTR(cSTR, (char *) "■■■폴더■■■ %s", iFOLDER);
+    iMEMO->Lines->Add(cSTR);
+
+    sfSTR(cSTR, (char *) "%s/*.*", iFOLDER);
+    //                                                                         .
+    if(FindFirst(cSTR, faAnyFile, SR)==000)
+    {
+        ///////
+        if((SR.Name!=".") && (SR.Name!=".."))
+        {
+            if((SR.Attr & faDirectory)==faDirectory)
+            {
+                // ▶ 디렉토리이면 파본다.
+                sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.Name);
+                Search_FOLDER(cSTR, iMEMO);
+            }
+            else
+            {
+                sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.Name);
+                iMEMO->Lines->Add(cSTR);
+            }
+        }
+        ///////
+        while(FindNext(SR)==000)
+        {
+            if((SR.Name!=".") && (SR.Name!=".."))
+            {
+                if((SR.Attr & faDirectory)==faDirectory)
+                {
+                    // ▶ 디렉토리이면 파본다.
+                    sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.Name);
+                    Search_FOLDER(cSTR, iMEMO);
+                }
+                else
+                {
+                    sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.Name);
+                    iMEMO->Lines->Add(cSTR);
+                }
+            }
+        }
+        ///////
+        FindClose(SR);
+    }
+    //                                                                         .
+}
+*/
+void Search_FOLDER(char *iFOLDER, char oLiST[][64])
+{
+    HANDLE hFiLE;
+    WIN32_FIND_DATAA SR;
+    char cSTR[256];
+
+    //                                                                         .
+    sfSTR(cSTR, (char *) "%s/*.*", iFOLDER);
+    // 
+    hFiLE=FindFirstFileA(cSTR, &SR);
+
+    if(hFiLE!=INVALID_HANDLE_VALUE)
+    {
+        ///////
+        if(!eqSTR(SR.cFileName,".") && !eqSTR(SR.cFileName,".."))
+        {
+            if((SR.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY)
+            {
+                // ▶ 디렉토리이면 파본다.
+                sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.cFileName);
+                Search_FOLDER(cSTR, oLiST);
+            }
+            else
+            {
+                sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.cFileName);
+//iMEMO->Lines->Add(cSTR);
+++Search_FOLDER_FiLEcnt;
+cpSTR(oLiST[Search_FOLDER_FiLEcnt], cSTR);
+            }
+        }
+        ///////
+        while(FindNextFileA(hFiLE, &SR))
+        {
+            if(!eqSTR(SR.cFileName,".") && !eqSTR(SR.cFileName,".."))
+            {
+                if((SR.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)==FILE_ATTRIBUTE_DIRECTORY)
+                {
+                    // ▶ 디렉토리이면 파본다.
+                    sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.cFileName);
+                    Search_FOLDER(cSTR, oLiST);
+                }
+                else
+                {
+                    sfSTR(cSTR, (char *) "%s/%s", iFOLDER, SR.cFileName);
+//iMEMO->Lines->Add(cSTR);
+++Search_FOLDER_FiLEcnt;
+cpSTR(oLiST[Search_FOLDER_FiLEcnt], cSTR);
+                }
+            }
+        }
+        ///////
+        FindClose(hFiLE);
+    }
+    //                                                                         .
+}
+//==============================================================================
+char *OnlyFullPN(char *iFn)
+{
+    char r[256];
+    int n,p;
+    int L;
+
+    L = lenSTR(iFn);
+    ///////
+    for(n=L;n>000;--n)
+    {
+        if(iFn[n] == '/' || iFn[n] == '\\') {
+        p=n; break; }
+    }
+    ///////
+    subcpSTR(r, iFn, 1, p);
+    return r;
+}
+//==============================================================================
+char *OnlyPN(char *iFn)
+{
+    char r[256];
+    int n,p;
+    int L;
+
+    L = lenSTR(iFn);
+    ///////
+    for(n=L;n>000;--n)
+    {
+        if(iFn[n] == '/' || iFn[n] == '\\') {
+        p=n; break; }
+    }
+    ///////
+    subcpSTR(r, iFn, 1, p);
+    return r;
+}
+//==============================================================================
+char *OnlyCurrPN(char *iPn)
+{
+    char r[256];
+    int n,p;
+    int L;
+
+    L = lenSTR(iPn);
+    ///////
+    for(n=L;n>000;--n)
+    {
+        if(iPn[n] == '/' || iPn[n] == '\\') {
+        p=n; break; }
+    }
+    ///////
+    subcpSTR(r, iPn, p+2, L-p+1);
+    return r;
+}
+//==============================================================================
+char *OnlyPFN(char *iFn)
+{
+    char r[256];
+    int n,p;
+    int L;
+
+    L = lenSTR(iFn);
+    ///////
+    for(n=L;n>000;--n)
+    {
+        if(iFn[n] == '.') {
+        p=n; break; }
+    }
+    ///////
+    subcpSTR(r, iFn, 1, p);
+    return r;
+}
+//==============================================================================
+char *OnlyFN(char *iFn)
+{
+    char r[256];
+    int n,p;
+    int L;
+
+    L = lenSTR(iFn);
+    ///////
+    for(n=L;n>000;--n)
+    if(iFn[n] == '/' || iFn[n] == '\\') { p=n+1; break; }
+    ///////
+    subcpSTR(r, iFn, p+1, L-p+1);
+    return r;
+}
+//==============================================================================
+void Mouse_ZONE(int x1, int y1, int x2, int y2)
+{
+    RECT mZONE;
+
+    if(x1==000 && y1==000 && x2==000 && y2==000) ClipCursor(NULL);
+    else
+    {
+        mZONE.left   = x1;
+        mZONE.top    = y1;
+        mZONE.right  = x2;
+        mZONE.bottom = y2;
+
+        ClipCursor(&mZONE);
+    }
+}
+//==============================================================================
+int Mouse_CHK_Area(Cru_RECT nemo, int MSEx, int MSEy)
+{ return ( (nemo.x1<=MSEx && MSEx<=nemo.x2) && (nemo.y1<=MSEy && MSEy<=nemo.y2) ); }
+//==============================================================================
+void TGA_Stream_Recover(char *Fname)
+{
+    int r;
+    FILE *Fu;
+
+    Fu = fopen((char *) Fname, "r+");
+
+    // ★ 예외처리
+    if(Fu==NULL)
+    {
+        r = fclose(Fu);
+        return;
+    }
+
+    fseek(Fu, 7, SEEK_SET);
+    fputc(0x00, Fu);
+    fclose(Fu);
+}
+//==============================================================================
+void BORN_TGAa(Cru_TGA *iTGA)
+{
+    iTGA = new Cru_TGA();
+}
+//==============================================================================
+Cru_TGA *BORN_TGAr(void)
+{
+    Cru_TGA *rTGA;
+
+    rTGA = new Cru_TGA();
+
+    return rTGA;
+}
+//==============================================================================
+void LOAD_TGAa(Cru_TGA *iTGA, char *Fname)
+{
+    TGA_Stream_Recover(Fname);
+    iTGA->Load(Fname, szTEX);
+}
+//==============================================================================
+Cru_TGA *LOAD_TGAr(char *Fname)
+{
+    Cru_TGA *rTGA;
+
+    rTGA = BORN_TGAr();
+
+    TGA_Stream_Recover(Fname);
+    rTGA->Load(Fname, szTEX);
+
+    return rTGA;
+}
+//==============================================================================
+void PART_TGAa(Cru_TGA *tTGA,
+               Cru_TGA *sTGA,
+               int x1, int y1,
+               int x2, int y2)
+{
+    BYTE *jSRC, *jTGT;
+    int w,h,x,y,pitch;
+    ///////
+    if(!sTGA) return;
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+    // TGA 스토어
+    w = sTGA->WW;
+    h = sTGA->HH;
+
+    pitch = w;
+
+    jTGT = (BYTE *) tTGA->FiLE.SRF.iMG;
+
+    for(y=y1;y<y2;y++)
+    {
+        jSRC = (BYTE *) sTGA->FiLE.SRF.iMG;
+        jSRC += (y*pitch + x1*4);
+
+        memcpy(jTGT, jSRC, (x2-x1)*4);
+    }
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+}
+//==============================================================================
+int GET_TEX_wSiZE(LPDIRECT3DTEXTURE9 iTEX)
+{
+    D3DSURFACE_DESC ddsd;
+
+    if (iTEX == NULL) return 0;
+    iTEX->GetLevelDesc( 0, &ddsd);
+    return ddsd.Width;
+}
+//==============================================================================
+int GET_TEX_hSiZE(LPDIRECT3DTEXTURE9 iTEX)
+{
+    D3DSURFACE_DESC ddsd;
+
+    if (iTEX == NULL) return 0;
+    iTEX->GetLevelDesc(0, &ddsd);
+    return ddsd.Height;
+}
+//==============================================================================
+void LOAD_Texture(char *iFiLE, LPDIRECT3DTEXTURE9 &oTEX)
+{
+    // 이미 텍스쳐가 할당되어 있으면 지운다
+    if(oTEX) oTEX->Release();
+
+    D3DXCreateTextureFromFileExA(xSCN.DEV,
+
+                                 iFiLE,
+
+                                 D3DX_DEFAULT_NONPOW2,
+                                 D3DX_DEFAULT_NONPOW2,
+                                 000,
+                                 000,
+                                 D3DFMT_UNKNOWN,
+//                                 D3DFMT_R5G6B5,
+//                                 D3DFMT_A8R8G8B8,
+
+                                 D3DPOOL_MANAGED,
+
+//                                 D3DX_FILTER_NONE,
+//                                 D3DX_FILTER_NONE,
+                                 D3DX_FILTER_LINEAR,
+                                 D3DX_FILTER_LINEAR,
+
+                                 000,
+                                 NULL,
+                                 NULL,
+                                 &oTEX);
+}
+//==============================================================================
+void QckLOAD_tgaTEXa(LPDIRECT3DDEVICE9 iDEV,
+                     LPDIRECT3DTEXTURE9 &iTEX,
+                     Cru_TGA *iTGA,
+                     char *Fname)
+{
+
+int L;
+
+L=lenSTR(Fname);
+UPCASE_String(Fname);
+
+if(Fname[L-3]=='T'
+&& Fname[L-2]=='G'
+&& Fname[L-1]=='A')
+{
+    LOAD_TGAa(iTGA, Fname);
+}
+else
+{
+//    iTGA->WW = 256;
+//    iTGA->HH = 256;
+}
+
+    if(iTEX)
+    {
+      iTEX->Release();
+    }
+
+//    D3DXCreateTextureFromFile(iDEV, Fname, &iTEX);
+    D3DXCreateTextureFromFileEx(iDEV,
+                                Fname,
+//                                 000,
+//                                 000,
+D3DX_DEFAULT_NONPOW2,
+D3DX_DEFAULT_NONPOW2,
+                                000,
+                                000,
+                                D3DFMT_UNKNOWN,
+//                                D3DFMT_R5G6B5,
+//                                D3DFMT_A8R8G8B8,
+
+                                D3DPOOL_MANAGED,
+
+//D3DX_FILTER_NONE,
+//D3DX_FILTER_NONE,
+
+D3DX_FILTER_LINEAR,
+D3DX_FILTER_LINEAR,
+
+                                000,
+                                NULL,
+                                NULL,
+                                &iTEX);
+}
+//==============================================================================
+Cru_TGA *QckLOAD_tgaTEXr(LPDIRECT3DDEVICE9 iDEV,
+                         LPDIRECT3DTEXTURE9 iTEX,
+                         char *Fname)
+{
+    Cru_TGA *rTGA;
+
+    rTGA = LOAD_TGAr(Fname);
+    D3DXCreateTextureFromFile(iDEV, Fname, &iTEX);
+
+    return rTGA;
+}
+//==============================================================================
+void LOAD_npw2_TEXa(LPDIRECT3DDEVICE9 iDEV,
+                  LPDIRECT3DTEXTURE9 &iTEX,
+                  Cru_TGA *iTGA,
+                  char *Fname)
+{
+    if(iTEX)
+    {
+      iTEX->Release();
+    }
+
+//    D3DXCreateTextureFromFile(iDEV, Fname, &iTEX);
+    D3DXCreateTextureFromFileEx(iDEV,
+                                Fname,
+//                                 000,
+//                                 000,
+D3DX_DEFAULT_NONPOW2,
+D3DX_DEFAULT_NONPOW2,
+                                000,
+                                000,
+                                D3DFMT_UNKNOWN,
+//                                D3DFMT_R5G6B5,
+//                                D3DFMT_A8R8G8B8,
+
+                                D3DPOOL_MANAGED,
+
+D3DX_FILTER_NONE,
+D3DX_FILTER_NONE,
+
+// D3DX_FILTER_LINEAR,
+// D3DX_FILTER_LINEAR,
+
+                                000,
+                                NULL,
+                                NULL,
+                                &iTEX);
+}
+//==============================================================================
+void ASGN_tgaTEX(LPDIRECT3DTEXTURE9 aTEX, Cru_TGA *iTGA)
+{
+    D3DLOCKED_RECT pRECT;
+    int r,n,j,x,y,sz;
+    BYTE *jSRC, *jTGT;
+    ///////
+    if(!iTGA || !aTEX) return;
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    // 텍셀 접근
+    ZeroMemory(&pRECT, sizeof(pRECT));
+//    aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_NOSYSLOCK);
+//    aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_DONOTWAIT);
+
+    aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_DISCARD);
+
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    // 텍셀 리피트 프리픽스
+    jTGT = (BYTE *) pRECT.pBits;
+    jSRC = (BYTE *) iTGA->FiLE.SRF.GDi;
+
+    sz = iTGA->WW * iTGA->HH * 4;
+
+    memcpy(jTGT, jSRC, sz);
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    aTEX->UnlockRect(000);
+}
+//==============================================================================
+void ASGN_bmpTEX(LPDIRECT3DTEXTURE9 aTEX, Bitmap *iBMP)
+{
+    D3DLOCKED_RECT pRECT;
+    int r,n,j,x,y,w,h,sz;
+
+    BitmapData bmd;
+    BYTE *jSRC, *jTGT;
+    ///////
+    if(!iBMP || !aTEX) return;
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    // 텍셀 접근
+    ZeroMemory(&pRECT, sizeof(pRECT));
+
+    w = iBMP->GetWidth();
+    h = iBMP->GetHeight();
+    Gdiplus::Rect nemo(0, 0, w, h);
+
+//    aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_NOSYSLOCK);
+//    aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_DONOTWAIT);
+    aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_DISCARD);
+
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    // 텍셀 리피트 프리픽스
+    jTGT = (BYTE *) pRECT.pBits;
+
+    iBMP->LockBits(&nemo, ImageLockMode::ImageLockModeRead, PixelFormat32bppARGB, &bmd);
+    jSRC = (BYTE *) (bmd.Scan0);
+
+        sz = w * h * 4;
+
+        /*                               */ 
+        /**/  memcpy(jTGT, jSRC, sz);  /**/
+        /*                               */ 
+
+    iBMP->UnlockBits(&bmd);
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    aTEX->UnlockRect(000);
+}
+//==============================================================================
+void BORN_DDSa(Cru_DDS *iDDS)
+{
+    iDDS = new Cru_DDS;
+}
+//==============================================================================
+Cru_DDS *BORN_DDSr(void)
+{
+    Cru_DDS *rDDS;
+
+    rDDS = new Cru_DDS();
+
+    return rDDS;
+}
+//==============================================================================
+void LOAD_DDSa(Cru_DDS *iDDS, char *Fname)
+{
+    iDDS->Load(Fname);
+}
+//==============================================================================
+Cru_DDS *LOAD_DDSr(char *Fname)
+{
+    Cru_DDS *rDDS;
+
+    rDDS->Load(Fname);
+
+    return rDDS;
+}
+//==============================================================================
+void PART_DDSa(Cru_DDS *tDDS, Cru_DDS *sDDS, int x1, int y1, int x2, int y2)
+{
+    BYTE *jSRC, *jTGT;
+    int w,h,sz;
+    int x,y,pitch,sx1,sy1,sx2,sy2;
+    ///////
+    if(!sDDS) return;
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+         // DDS 스토어
+         w = sDDS->WW;
+         h = sDDS->HH;
+
+         pitch = w;
+
+         jTGT = (BYTE *) tDDS->DDS.surface_data;
+
+         for(y=y1;y<y2;y+=4)
+         {
+             jSRC = (BYTE *) sDDS->DDS.surface_data;
+             jSRC += (y*pitch + x1*4);
+
+             for(x=x1;x<x2;x+=4)
+             {
+                 memcpy(jTGT, jSRC, 16);
+                 jTGT+=16;
+                 jSRC+=16;
+             }
+         }
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+}
+//==============================================================================
+Cru_DDS *PART_DDSr(Cru_DDS *iDDS, int iFMT, int x1, int y1, int x2, int y2)
+{
+    return NULL;
+}
+//==============================================================================
+void ASGN_ddsTEX(LPDIRECT3DTEXTURE9 aTEX, Cru_DDS *iDDS)
+{
+    D3DLOCKED_RECT pRECT;
+    BYTE *jSRC, *jTGT;
+    int w,h,sz;
+    int x,y,Nx,Ny;
+    ///////
+    if(!iDDS) return;
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+    // 적절한 DDS 포맷일때만, 읽는다 (대용량 파일읽기)
+    switch(iDDS->DDS.header.pixelformat.encoding)
+    {
+    ///////
+    case fmtDXT5:
+
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+         // 텍스쳐 접근
+         ZeroMemory(&pRECT, sizeof(pRECT));
+         aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_NOSYSLOCK);
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+         // 텍스쳐 스토어
+         w = iDDS->WW;
+         h = iDDS->HH;
+         Nx = Near2Pow(w);
+         Ny = Near2Pow(h);
+
+             jTGT = (BYTE *) pRECT.pBits;
+             jSRC = (BYTE *) iDDS->DDS.surface_data;
+
+             for(y=0;y<Ny;y+=4)
+             for(x=0;x<Nx;x+=4)
+             {
+                 if(x < w)
+                 {
+                     memcpy(jTGT, jSRC, 16);
+                     jTGT+=16;
+                     jSRC+=16;
+                 }
+                 else
+                 {
+                    jTGT+=16;
+                 }
+             }
+
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+         aTEX->UnlockRect(000);
+
+    break;
+    ///////
+    default: return; break;
+    ///////
+    }
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+}
+//==============================================================================
+void ASGN_ddsTEXpart(LPDIRECT3DTEXTURE9 aTEX, Cru_DDS *iDDS,
+                     int x1, int y1, int x2, int y2)
+{
+    D3DLOCKED_RECT pRECT;
+    BYTE *jSRC, *jTGT;
+    int pitch,sz;
+    int x,y,sx1,sy1,sx2,sy2;
+    ///////
+    if(!iDDS) return;
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+    // 적절한 DDS 포맷일때만, 적용한다
+    switch(iDDS->DDS.header.pixelformat.encoding)
+    {
+    ///////
+    case fmtDXT5:
+
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+         // 텍스쳐 접근
+         ZeroMemory(&pRECT, sizeof(pRECT));
+         aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_NOSYSLOCK);
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+         // 텍스쳐 스토어
+         pitch = iDDS->WW;
+
+            jTGT = (BYTE *) pRECT.pBits;
+
+            for(y=y1;y<y2;y+=4)
+            {
+                jSRC = (BYTE *) iDDS->DDS.surface_data;
+                jSRC += (y*pitch + x1*4);
+
+                for(x=x1;x<x2;x+=4)
+                {
+                    memcpy(jTGT, jSRC, 16);
+                    jTGT+=16;
+                    jSRC+=16;
+                }
+            }
+
+         //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤.
+         aTEX->UnlockRect(000);
+
+    break;
+    ///////
+    default: return; break;
+    ///////
+    }
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+}
+//==============================================================================
+void ASGN_tgaTEXpart(LPDIRECT3DTEXTURE9 aTEX, Cru_TGA *iTGA,
+                     int nx, int ny,
+                     int x1, int y1, int x2, int y2)
+{
+    D3DLOCKED_RECT pRECT;
+    DWORD *jSRC, *jTGT;
+    int x,y,w,h,PXLw,PXLh;
+    ///////
+    if(!iTGA) return;
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+    // 텍스쳐 접근
+    ZeroMemory(&pRECT, sizeof(pRECT));
+    aTEX->LockRect(000, &pRECT, NULL, D3DLOCK_NOSYSLOCK);
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    // 텍스쳐 스토어
+    w  = x2-x1;
+    h  = y2-y1;
+
+    PXLw = iTGA->FiLE.SRF.PXLw[nx][ny];
+    PXLh = iTGA->FiLE.SRF.PXLh[nx][ny];
+
+    jTGT = (DWORD *) pRECT.pBits;
+    jSRC = (DWORD *) iTGA->FiLE.SRF.iMG[nx][ny];
+
+    for(y=1;y<=h;y++)
+    {
+        memcpy(jTGT, jSRC, PXLw*4);
+
+        jSRC += w;
+        jTGT += w;
+    }
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    aTEX->UnlockRect(000);
+    //▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩
+}
+//==============================================================================
+void BORN_TEXa(LPDIRECT3DDEVICE9 iDEV, LPDIRECT3DTEXTURE9 &iTEX, int tw, int th, int iFMT)
+{
+    if(iTEX!=NULL)
+    {
+
+return;
+
+//        try
+//        {
+
+            iTEX->Release();
+            iTEX = NULL;
+
+//        }
+//        catch (Exception &exception)
+//        {
+//        }
+    }
+
+    D3DXCreateTexture(iDEV, tw, th, 000, 000,
+                      (D3DFORMAT) iFMT,
+                      D3DPOOL_MANAGED,
+                      &iTEX);
+}
+//==============================================================================
+LPDIRECT3DTEXTURE9 BORN_TEXr(LPDIRECT3DDEVICE9 iDEV, int tw, int th, int iFMT)
+{
+    LPDIRECT3DTEXTURE9 rTEX;
+
+    D3DXCreateTexture(iDEV, tw, th, 000, 000,
+                      (D3DFORMAT) iFMT,
+                      D3DPOOL_MANAGED,
+                      &rTEX);
+    return rTEX;
+}
+//==============================================================================
+void TexFiLTER_None(LPDIRECT3DDEVICE9 iDEV)
+{
+    iDEV->SetSamplerState(000, D3DSAMP_MINFILTER, D3DTEXF_NONE);
+    iDEV->SetSamplerState(000, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+    iDEV->SetSamplerState(000, D3DSAMP_MAGFILTER, D3DTEXF_NONE);
+}
+//==============================================================================
+void TexFiLTER_Linear(LPDIRECT3DDEVICE9 iDEV)
+{
+    iDEV->SetSamplerState(000, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    iDEV->SetSamplerState(000, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+    iDEV->SetSamplerState(000, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+}
+//==============================================================================
+int GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
+{
+   UINT  num = 0;          // number of image encoders
+   UINT  size = 0;         // size of the image encoder array in bytes
+
+   ImageCodecInfo* pImageCodecInfo = NULL;
+
+   GetImageEncodersSize(&num, &size);
+   if(size == 0)
+      return -1;  // Failure
+
+   pImageCodecInfo = (ImageCodecInfo*)(malloc(size));
+   if(pImageCodecInfo == NULL)
+      return -1;  // Failure
+
+   GetImageEncoders(num, size, pImageCodecInfo);
+
+   for(UINT j = 0; j < num; ++j)
+   {
+      if( wcscmp(pImageCodecInfo[j].MimeType, format) == 0 )
+      {
+         *pClsid = pImageCodecInfo[j].Clsid;
+         free(pImageCodecInfo);
+         return j;  // Success
+      }    
+   }
+
+   free(pImageCodecInfo);
+   return -1;  // Failure
+}
+//==============================================================================
+DWORD PEEK_Texel(int px, int py, LPDIRECT3DTEXTURE9 TEX, int tw, int th)
+{
+    DWORD rtn;
+    LPDIRECT3DSURFACE9 sSRF;
+    D3DLOCKED_RECT sRECT;
+    DWORD *jSRC;
+
+    if(!pRECTpxl(px,py,000,000,tw,th)) return 0x0;
+    //                                                                         .
+    ZeroMemory(&sRECT, sizeof(sRECT));
+    TEX->GetSurfaceLevel(000, &sSRF);
+    sSRF->LockRect(&sRECT, NULL, D3DLOCK_DISCARD);
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+
+        jSRC = (DWORD *) sRECT.pBits;
+        jSRC += px;
+        jSRC += py*tw;
+
+        rtn = *jSRC;
+
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    sSRF->UnlockRect();
+
+    if((rtn & 0xFF000000)!=0xFF000000) rtn = 0x0;
+
+    return rtn;
+}
+//==============================================================================
+void POKE_Texel(int px, int py, DWORD c, LPDIRECT3DTEXTURE9 TEX, int tw, int th)
+{
+    LPDIRECT3DSURFACE9 sSRF;
+    D3DLOCKED_RECT sRECT;
+    DWORD *jSRC;
+
+    if(!pRECTpxl(px,py,000,000,tw,th)) return;
+    //                                                                         .
+    ZeroMemory(&sRECT, sizeof(sRECT));
+    TEX->GetSurfaceLevel(000, &sSRF);
+    sSRF->LockRect(&sRECT, NULL, 0);
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+
+        jSRC = (DWORD *) sRECT.pBits;
+        jSRC += px;
+        jSRC += py*tw;
+
+        *jSRC = c;
+
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    sSRF->UnlockRect();
+}
+//==============================================================================
+void HAN_TextOut(char *FontNAME, DWORD Fc, DWORD SHc, int iX, int iY, int iW, int iSiZE, char *oTEXT, int iSHADOW, int iBOLD, int iJUSTiFY, Gdiplus::Graphics *g)
+{
+    int jx,jy;
+    int n,b,L;
+    char fSTR[256], aSTR[256];
+    WCHAR wSTR[256];
+
+    cpSTR(aSTR, oTEXT);
+    cpSTR(fSTR, FontNAME);
+
+    Gdiplus::Font F((WCHAR *) fSTR, (Gdiplus::REAL) iSiZE, FontStyleRegular, UnitPixel);
+    Gdiplus::StringFormat SF;
+
+        //■■■■■■■
+        //텍스트 오른쪽정렬
+        switch(iJUSTiFY)
+        {
+        // 가운데정렬
+        case 0:
+                SF.SetAlignment(StringAlignmentCenter);
+                SF.SetLineAlignment(StringAlignmentNear);
+        break;
+        // 왼쪽정렬
+        case 1:
+                SF.SetAlignment(StringAlignmentNear);
+                SF.SetLineAlignment(StringAlignmentNear);
+        break;
+        // 오른쪽정렬
+        case 2:
+                SF.SetAlignment(StringAlignmentFar);
+                SF.SetLineAlignment(StringAlignmentNear);
+        break;
+        }
+
+        //■■■■■■■
+        // 글자그림자 표현
+        Gdiplus::SolidBrush B_SHc(SHc);
+
+        switch(iSHADOW)
+        {
+        // 보통
+        case 000:
+        break;
+        // 그림자
+        case 001:
+                  if(iBOLD)
+                  {
+                      for(b=0;b<=1;b++)
+                      {
+                          for(jy=00;jy<=+1;jy++)
+                          for(jx=00;jx<=+1;jx++)
+                          {
+                              Gdiplus::RectF R(b+iX+jx, iY+jy, iW, 32);
+                              MultiByteToWideChar(CP_ACP, 0, aSTR, -1, wSTR, MAX_PATH);
+                              g->DrawString(wSTR, -1, &F, R, &SF, &B_SHc);
+                          }
+                      }
+                  }
+                  else
+                  {
+                      for(jy=00;jy<=+1;jy++)
+                      for(jx=00;jx<=+1;jx++)
+                      {
+                          Gdiplus::RectF R(iX+jx, iY+jy, iW, 32);
+                          MultiByteToWideChar(CP_ACP, 0, aSTR, -1, wSTR, MAX_PATH);
+                          g->DrawString(wSTR, -1, &F, R, &SF, &B_SHc);
+                      }
+                  }
+        break;
+        // 외곽선
+        case 002:
+                  if(iBOLD)
+                  {
+                      for(b=0;b<=1;b++)
+                      {
+                          for(jy=-1;jy<=+1;jy++)
+                          for(jx=-1;jx<=+1;jx++)
+                          {
+                              Gdiplus::RectF R(b+iX+jx, iY+jy, iW, 32);
+                              MultiByteToWideChar(CP_ACP, 0, aSTR, -1, wSTR, MAX_PATH);
+                              g->DrawString(wSTR, -1, &F, R, &SF, &B_SHc);
+                          }
+                      }
+                  }
+                  else
+                  {
+                      for(jy=-1;jy<=+1;jy++)
+                      for(jx=-1;jx<=+1;jx++)
+                      {
+                          Gdiplus::RectF R(iX+jx, iY+jy, iW, 32);
+                          MultiByteToWideChar(CP_ACP, 0, aSTR, -1, wSTR, MAX_PATH);                          
+                          g->DrawString(wSTR, -1, &F, R, &SF, &B_SHc);
+                      }
+                  }
+
+        break;
+        }
+        //■■■■■■■
+
+    // 글자 표현
+    Gdiplus::SolidBrush B_Fc(Fc);
+
+    Gdiplus::RectF R(iX+000, iY+000, iW, 32);
+    MultiByteToWideChar(CP_ACP, 0, aSTR, -1, wSTR, MAX_PATH);
+    g->DrawString(wSTR, -1, &F, R, &SF, &B_Fc);
+
+    if(iBOLD)
+    {
+        Gdiplus::RectF R(iX+001, iY+000, iW, 32);
+        MultiByteToWideChar(CP_ACP, 0, aSTR, -1, wSTR, MAX_PATH);
+        g->DrawString(wSTR, -1, &F, R, &SF, &B_Fc);
+    }
+}
+//==============================================================================
+void HText(ID3DXFont* iHan_FONT,
+           int iX, int iY,
+           char *oTEXT,
+           int iTYPE,
+           int iBOLD,
+           int iJx, int iJy,
+           DWORD Fc, DWORD SHc)
+{
+    RECT nemo;
+    int x1,y1,x2,y2;
+    int jx,jy;
+
+    x1 = iX;
+    y1 = iY;
+    x2 = x1+512;
+    y2 = y1+32;
+
+    //■■■■■■■
+    // ♣ 표현타입
+
+        switch(iTYPE)
+        {
+        // ● 보통출력
+        case 0x0:
+                if(iBOLD)
+                {
+                    SetRect(&nemo, 1+x1+iJx, y1+iJy, 1+x2+iJx, y2+iJy);
+                    iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, Fc);
+                }
+        break;
+        // ● 그림자출력
+        case 0x1:
+                SetRect(&nemo, x1+1, y1+1, x2+1, y2+1);
+                iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, SHc);
+
+                if(iBOLD)
+                {
+                    SetRect(&nemo, 1+x1+1, y1+1, 1+x2+1, y2+1);
+                    iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, SHc);
+
+                    SetRect(&nemo, 1+x1+iJx, y1+iJy, 1+x2+iJx, y2+iJy);
+                    iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, Fc);
+                }
+        break;
+        // ● 외곽선출력
+        case 0x2:
+                for(jy=-1;jy<=+1;jy++) for(jx=-1;jx<=+1;jx++)
+                {
+                    SetRect(&nemo, x1+jx, y1+jy, x2+jx, y2+jy);
+                    iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, SHc);
+                }
+
+                if(iBOLD)
+                {
+                    for(jy=-1;jy<=+1;jy++) for(jx=-1;jx<=+1;jx++)
+                    {
+                        SetRect(&nemo, 1+x1+jx, y1+jy, 1+x2+jx, y2+jy);
+                        iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, SHc);
+                    }
+
+                    SetRect(&nemo, 1+x1+iJx, y1+iJy, 1+x2+iJx, y2+iJy);
+                    iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, Fc);
+                }
+        break;
+        //
+        }
+
+    //■■■■■■■
+    // ♣ 기준출력
+
+        SetRect(&nemo, x1+iJx, y1+iJy, x2+iJx, y2+iJy);
+        iHan_FONT->DrawText(NULL, oTEXT, -1, &nemo, DT_LEFT, Fc);
+
+    //■■■■■■■
+}
+//==============================================================================
+void iSWAP(int *ia, int *ib)     { int sw;   sw = *ia; *ia = *ib; *ib = sw; }
+void fSWAP(float *fa, float *fb) { float sw; sw = *fa; *fa = *fb; *fb = sw; }
+//==============================================================================
+void COPY_TEX(LPDIRECT3DTEXTURE9 tTEX,
+              int Tw,
+              int Tx, int Ty,
+              LPDIRECT3DTEXTURE9 sTEX,
+              int Sw,
+              int Sx1, int Sy1,
+              int Sx2, int Sy2)
+{
+
+    LPDIRECT3DSURFACE9 sSRF, tSRF;
+
+    D3DLOCKED_RECT sRECT, tRECT;
+    DWORD *jSRC, *jTGT;
+    int x,y,Rw,Rh;
+
+    ZeroMemory(&sRECT, sizeof(sRECT));
+    ZeroMemory(&tRECT, sizeof(tRECT));
+//    sTEX->LockRect(000, &sRECT, NULL, D3DLOCK_READONLY);
+//    tTEX->LockRect(000, &tRECT, NULL, D3DLOCK_NOSYSLOCK);
+
+    sTEX->GetSurfaceLevel(000, &sSRF); sSRF->LockRect(&sRECT, NULL, 000);
+    tTEX->GetSurfaceLevel(000, &tSRF); tSRF->LockRect(&tRECT, NULL, 000);
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    Rw = Sx2 - Sx1;
+    Rh = Sy2 - Sy1;
+
+        jSRC = (DWORD *) sRECT.pBits;
+//        jSRC += Sx1*4;
+//        jSRC += Sy1*Sw*4;
+
+        jTGT = (DWORD *) tRECT.pBits;
+//        jTGT += Tx*4;
+//        jTGT += Ty*Tw*4;
+
+
+// ScanLine 복사
+//for(y=0;y<Rh;y++)
+for(y=0;y<1;y++)
+{
+    memcpy(jTGT, jSRC, Rw * 4);
+
+    jTGT += Tw;
+    jSRC += Sw;
+}
+
+
+/*
+    for(y=0;y<Rh;y++)
+    for(x=0;x<Rw*4;x++)
+    {
+        *jTGT = *jSRC;
+
+        jTGT += Tw;
+        jSRC += Sw;
+    }
+*/
+    //▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤▤
+    sTEX->UnlockRect(000);
+    tTEX->UnlockRect(000);
+}
+//==============================================================================
+void COPY_TGA(Cru_TGA *tTGA,
+              int Tx, int Ty,
+              Cru_TGA *sTGA,
+              int Sx1, int Sy1,
+              int Sx2, int Sy2)
+{
+/*
+    int Rw,Rh;
+
+    Rw = Sx2 - Sx1;
+    Rh = Sy2 - Sy1;
+
+    tTGA->WW = Rw;
+    tTGA->HH = Rh;
+
+    tTGA->BMP->Canvas->CopyMode = cmSrcCopy;
+    tTGA->BMP->Canvas->CopyRect(Rect(Tx,Ty,Tx+Rw,Ty+Rh),
+                                sTGA->BMP->Canvas,
+                                Rect(Sx1,Sy1,Sx2,Sy2));
+*/
+}
+//==============================================================================
+void SAVE_ScreenShot(char *SaveFileName,
+                    LPDIRECT3DDEVICE9 iDEV)
+{
+    int r,w,h;
+    LPDIRECT3DSURFACE9 mSCREEN;
+
+    // 임시 오프스크린 생성
+    iDEV->CreateOffscreenPlainSurface(0, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &mSCREEN, NULL);
+
+    // 임시 백버퍼 생성
+    iDEV->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &mSCREEN);
+
+    // DDS 로 파일저장
+    r = D3DXSaveSurfaceToFile(SaveFileName, D3DXIFF_DDS, mSCREEN, NULL, NULL);
+
+    if(r==D3DERR_INVALIDCALL) MessageBox(NULL, "저장실패 !", "♬도움말", MB_OK);
+}
+//==============================================================================
+                                          //                                   .
+void qDRAW(LPDIRECT3DTEXTURE9 iTEX,       // 찍을텍스쳐                        .
+                                          //                                   .
+           float iTw, float iTh,          // 텍스쳐크기                        .
+                                          //                                   .
+           float iX,  float iY,           // 표시좌표                          .
+                                          //                                   .
+           DWORD iC)                      // 디퓨즈광                          .
+                                          //                                   .
+{
+    sVTX pVTX[4];
+    void *jVTX;
+
+    float x, y;
+
+    // ● 표시좌표
+    x = iX - 0.5;
+    y = iY - 0.5;
+
+    //==========================================================================
+    // ● 프리미티브 적용
+    pVTX[0].x = x;           pVTX[1].x = x+iTw;
+    pVTX[0].y = y;           pVTX[1].y = y;
+    pVTX[3].x = x;           pVTX[2].x = x+iTw;
+    pVTX[3].y = y+iTh;       pVTX[2].y = y+iTh;
+
+    pVTX[0].u = 0.0;         pVTX[1].u = 1.0;
+    pVTX[0].v = 0.0;         pVTX[1].v = 0.0;
+    pVTX[3].u = 0.0;         pVTX[2].u = 1.0;
+    pVTX[3].v = 1.0;         pVTX[2].v = 1.0;
+
+    pVTX[0].z = pVTX[1].z = pVTX[2].z = pVTX[3].z = 0.0;
+    pVTX[0].r = pVTX[1].r = pVTX[2].r = pVTX[3].r = 1.0;
+    pVTX[0].c = pVTX[1].c = pVTX[3].c = pVTX[2].c = iC;
+
+    // ● 텍스쳐 적용
+    xSCN.DEV->SetTexture(000, iTEX);
+
+    // ● 버텍스버퍼 적용
+    xSCN.VB->Lock(0, sizeof(pVTX), (void**)&jVTX, 0);
+    memcpy(jVTX, pVTX, sizeof(pVTX));
+    xSCN.VB->Unlock();
+
+    // ● 프리미티브 표시
+    xSCN.DEV->SetFVF(cVTX);
+    xSCN.DEV->SetStreamSource(0, xSCN.VB, 0, sizeof(sVTX));
+    xSCN.DEV->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
+}
+//==============================================================================
+                                          //                                   .
+void sDRAW(LPDIRECT3DTEXTURE9 iTEX,       // 찍을텍스쳐                        .
+                                          //                                   .
+           float iTw, float iTh,          // 텍스쳐크기                        .
+                                          //                                   .
+           float iX,  float iY,           // 표시좌표                          .
+                                          //                                   .
+           DWORD iC,                      // 디퓨즈광                          .
+                                          //                                   .
+           float scale,                   // 스케일비율                        .
+                                          //                                   .
+           int   iFw, int   iFh,          // 한개 이미지 크기                  .
+           int   iFn)                     // 표시할 이미지 프레임번호          .
+                                          //                                   .
+{
+    sVTX pVTX[4];
+    void *jVTX;
+
+    float x, y, w, h;
+    float tu, tv, tw, th;
+    float Fx, Fy;
+    int   Fw, Fh;
+    float Diamond_X, Diamond_Y;
+    float  x1, y1, x2, y2, x3, y3, x4, y4;
+
+    // ● 근접 2의 승수보간 텍스쳐
+//    iTw = Near2Pow(iTw);
+//    iTh = Near2Pow(iTh);
+
+    // ● 표시좌표
+    x = iX - 0.5;
+    y = iY - 0.5;
+
+    //==========================================================================
+    // ● 텍스쳐전체 or 패턴形 프레임으로 표시할 경우
+
+        // ● 텍스쳐 전체로 표시할 경우
+        if(iFn==000)
+        {
+            w = iTw * scale;
+            h = iTh * scale;
+
+            tu = 0.0;
+            tv = 0.0;
+            
+//            tw = w / iTw / scale;
+//            th = h / iTh / scale;
+tw = 1.0;
+th = 1.0;
+
+        }
+        // ● 패턴形, 프레임위치 계산하여 표시할 경우
+        else
+        {
+            w = iFw * scale;
+            h = iFh * scale;
+
+            Fw = iTw / iFw;
+            Fh = iTh / iFh;
+            Diamond_X = 1.0 / Fw;
+            Diamond_Y = 1.0 / Fh;
+
+            Fx = ((iFn-1) % Fw) * Diamond_X;
+            Fy = ((iFn-1) / Fw) * Diamond_Y;
+
+            tu = Fx;
+            tv = Fy;
+            tw = Diamond_X;
+            th = Diamond_Y;
+        }
+
+    //==========================================================================
+    // ● 프리미티브 적용
+    x1 = x;   y1 = y;
+    x2 = x+w; y2 = y;
+    x3 = x;   y3 = y+h;
+    x4 = x+w; y4 = y+h;
+
+    pVTX[0].x = x1;      pVTX[1].x = x2;
+    pVTX[0].y = y1;      pVTX[1].y = y2;
+    pVTX[0].z = 0.0;     pVTX[1].z = 0.0;
+    pVTX[0].r = 1.0;     pVTX[1].r = 1.0;
+    pVTX[0].c = iC;      pVTX[1].c = iC;
+    pVTX[0].u = tu;      pVTX[1].u = tu + tw;
+    pVTX[0].v = tv;      pVTX[1].v = tv;
+
+    pVTX[3].x = x3;      pVTX[2].x = x4;
+    pVTX[3].y = y3;      pVTX[2].y = y4;
+    pVTX[3].z = 0.0;     pVTX[2].z = 0.0;
+    pVTX[3].r = 1.0;     pVTX[2].r = 1.0;
+    pVTX[3].c = iC;      pVTX[2].c = iC;
+    pVTX[3].u = tu;      pVTX[2].u = tu + tw;
+    pVTX[3].v = tv + th; pVTX[2].v = tv + th;
+
+    // ● 텍스쳐 적용
+    xSCN.DEV->SetTexture(000, iTEX);
+
+    // ● 버텍스버퍼 적용
+    xSCN.VB->Lock(0, sizeof(pVTX), (void**)&jVTX, 0);
+    memcpy(jVTX, pVTX, sizeof(pVTX));
+    xSCN.VB->Unlock();
+
+    // ● 프리미티브 표시
+    xSCN.DEV->SetFVF(cVTX);
+    xSCN.DEV->SetStreamSource(0, xSCN.VB, 0, sizeof(sVTX));
+    xSCN.DEV->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
+}
+//==============================================================================
+                                          //                                   .
+void thmDRAW(LPDIRECT3DTEXTURE9 iTEX,     // 찍을텍스쳐                        .
+                                          //                                   .
+             float iTw, float iTh,        // 텍스쳐크기                        .
+                                          //                                   .
+             float iX,  float iY,         // 표시좌표                          .
+                                          //                                   .
+             DWORD iC,                    // 디퓨즈광                          .
+                                          //                                   .
+             int   t1x, int   t1y,        // Transform (폴리곤변형 4꼭지점)    .
+             int   t2x, int   t2y,        //                                   .
+             int   t3x, int   t3y,        //                                   .
+             int   t4x, int   t4y)        //                                   .
+                                          //                                   .
+{
+    sVTX pVTX[4];
+    void *jVTX;
+
+    float x, y, w, h;
+    float tu, tv, tw, th;
+    float x1, y1, x2, y2, x3, y3, x4, y4;
+
+    // ● 표시좌표
+    x = iX - 0.5;
+    y = iY - 0.5;
+
+    //==========================================================================
+    // ● 텍스쳐 전체로 표시
+    w = iTw;
+    h = iTh;
+
+    tu = 0.0;
+    tv = 0.0;
+    
+//    tw = w / iTw;
+//    th = h / iTh;
+tw = 1.0;
+th = 1.0;
+
+    //==========================================================================
+    // ● 프리미티브 적용
+    x1 = x;   y1 = y;
+    x2 = x+w; y2 = y;
+    x3 = x;   y3 = y+h;
+    x4 = x+w; y4 = y+h;
+
+    pVTX[0].x = x1;      pVTX[1].x = x2;
+    pVTX[0].y = y1;      pVTX[1].y = y2;
+    pVTX[0].z = 0.0;     pVTX[1].z = 0.0;
+    pVTX[0].r = 1.0;     pVTX[1].r = 1.0;
+    pVTX[0].c = iC;      pVTX[1].c = iC;
+    pVTX[0].u = tu;      pVTX[1].u = tu + tw;
+    pVTX[0].v = tv;      pVTX[1].v = tv;
+
+    pVTX[3].x = x3;      pVTX[2].x = x4;
+    pVTX[3].y = y3;      pVTX[2].y = y4;
+    pVTX[3].z = 0.0;     pVTX[2].z = 0.0;
+    pVTX[3].r = 1.0;     pVTX[2].r = 1.0;
+    pVTX[3].c = iC;      pVTX[2].c = iC;
+    pVTX[3].u = tu;      pVTX[2].u = tu + tw;
+    pVTX[3].v = tv + th; pVTX[2].v = tv + th;
+
+    // ● Transform 적용
+    pVTX[0].x += t1x; pVTX[1].x += t2x;
+    pVTX[0].y += t1y; pVTX[1].y += t2y;
+
+    pVTX[3].x += t3x; pVTX[2].x += t4x;
+    pVTX[3].y += t3y; pVTX[2].y += t4y;
+
+    // ● 텍스쳐 적용
+    xSCN.DEV->SetTexture(000, iTEX);
+
+    // ● 버텍스버퍼 적용
+    xSCN.VB->Lock(0, sizeof(pVTX), (void**)&jVTX, 0);
+    memcpy(jVTX, pVTX, sizeof(pVTX));
+    xSCN.VB->Unlock();
+
+    // ● 프리미티브 표시
+    xSCN.DEV->SetFVF(cVTX);
+    xSCN.DEV->SetStreamSource(0, xSCN.VB, 0, sizeof(sVTX));
+    xSCN.DEV->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
+}
+//==============================================================================
+                                          //                                   .
+void SPR_DrawSFX(LPDIRECT3DDEVICE9 iDEV,  // 적용할 3D 디바이스                .
+                 LPDIRECT3DVERTEXBUFFER9 iVB,// 적용할 3D 버텍스버퍼           .
+                 int                     zPS,// 픽셀쉐이더 적용플랙            .
+                 LPDIRECT3DPIXELSHADER9  iPS,// 적용할 픽셀쉐이더              .
+                 LPDIRECT3DTEXTURE9 iTEX, // 찍을텍스쳐                        .
+                                          //                                   .
+                 float iTw,   float iTh,  // 텍스쳐크기                        .
+                                          //                                   .
+                 float iPx,   float iPy,  // 표시좌표                          .
+                                          //                                   .
+                 DWORD iC1,   DWORD iC2,  // 디퓨즈광 좌상 + 우상              .
+                 DWORD iC3,   DWORD iC4,  // 디퓨즈광 좌하 + 우하              .
+                                          //                                   .
+                 float iSx,   float iSy,  // 스케일비율                        .
+                                          //                                   .
+                 float iCx,   float iCy,  // 회전중심좌표 (img좌상기준 상대좌표)
+                 float angle,             // 회전각도 (0 ~ 359, 반시계방향)    .
+                                          //                                   .
+                 float t1x,   float t1y,  // Transform (폴리곤변형 4꼭지점)    .
+                 float t2x,   float t2y,  //                                   .
+                 float t3x,   float t3y,  //                                   .
+                 float t4x,   float t4y,  //                                   .
+                                          //                                   .
+                 float SRx1,  float SRy1, // 소스렉트 x1,y1 (적용안하면 -1)    .
+                 float SRx2,  float SRy2, //          x2,y2 (적용안하면 -1)    .
+                                          //                                   .
+                 int   iFw,   int   iFh,  // 한개 이미지 크기                  .
+                 int   iFn)               // 표시할 이미지 프레임번호          .
+                                          //                                   .
+{
+    sVTX pVTX[4], vP[4];
+    void *jVTX;
+
+    float x, y, w, h;
+    float tu, tv, tw, th;
+    float Fx, Fy;
+    float Fw, Fh;
+
+    float Diamond_X, Diamond_Y;
+
+    float x1,  y1,  x2,  y2,  x3,  y3,  x4,  y4;
+    float Lx1, Ly1, Lx2, Ly2, Lx3, Ly3, Lx4, Ly4;
+    float aRAD;
+
+    // ● 표시좌표
+    x = iPx - 0.5f;
+    y = iPy - 0.5f;
+
+    // ● 확대배율
+//    scale = (scale<=0.0)? 1.0 : scale;
+
+    if(iTw<=000 || iTh<=000) return;
+    //==========================================================================
+    // ● 소스렉트로 표시할 경우
+    if(SRx1!=-1 && SRy1!=-1 && SRx2!=-1 && SRy2!=-1)
+    {
+        w = (SRx2-SRx1) * iSx;
+        h = (SRy2-SRy1) * iSy;
+        Fx = 1.0 / iTw;
+        Fy = 1.0 / iTh;
+
+        tu = SRx1 * Fx;
+        tv = SRy1 * Fy;
+        tw = (SRx2-SRx1) * Fx;
+        th = (SRy2-SRy1) * Fy;
+    }
+    //==========================================================================
+    // ● 텍스쳐전체 or 패턴形 프레임으로 표시할 경우
+    else
+    {
+        // ● 텍스쳐 전체로 표시할 경우
+        if(iFn==000)
+        {
+            w = iTw * iSx;
+            h = iTh * iSy;
+
+            tu = 0.0;
+            tv = 0.0;
+
+            tw = w / iTw / iSx;
+            th = h / iTh / iSy;
+        }
+        // ● 패턴形, 프레임위치 계산하여 표시할 경우
+        else
+        {
+            w = iFw * iSx;
+            h = iFh * iSy;
+
+            Fw = iTw / iFw;
+            Fh = iTh / iFh;
+            Diamond_X = 1.0 / Fw;
+            Diamond_Y = 1.0 / Fh;
+
+            Fx = ((iFn-1) % (int)Fw) * Diamond_X;
+            Fy = ((iFn-1) / (int)Fw) * Diamond_Y;
+
+            tu = Fx;
+            tv = Fy;
+            tw = Diamond_X;
+            th = Diamond_Y;
+        }
+    }
+    //==========================================================================
+    // ● 회전
+    iCx += iPx;
+    iCy += iPy;
+
+    x1 = x;   y1 = y;
+    x2 = x+w; y2 = y;
+    x3 = x;   y3 = y+h;
+    x4 = x+w; y4 = y+h;
+
+    Lx1 = x1-iCx; Ly1 = y1-iCy;
+    Lx2 = x2-iCx; Ly2 = y2-iCy;
+    Lx3 = x3-iCx; Ly3 = y3-iCy;
+    Lx4 = x4-iCx; Ly4 = y4-iCy;
+
+    // 라디안각도 값 계산
+    aRAD = angle * mRAD;
+
+    vP[0].x = Lx1* cos(aRAD) + Ly1*sin(aRAD) +iPx;
+    vP[0].y = Lx1*-sin(aRAD) + Ly1*cos(aRAD) +iPy;
+    vP[1].x = Lx2* cos(aRAD) + Ly2*sin(aRAD) +iPx;
+    vP[1].y = Lx2*-sin(aRAD) + Ly2*cos(aRAD) +iPy;
+    vP[2].x = Lx3* cos(aRAD) + Ly3*sin(aRAD) +iPx;
+    vP[2].y = Lx3*-sin(aRAD) + Ly3*cos(aRAD) +iPy;
+    vP[3].x = Lx4* cos(aRAD) + Ly4*sin(aRAD) +iPx;
+    vP[3].y = Lx4*-sin(aRAD) + Ly4*cos(aRAD) +iPy;
+
+    // ● 프리미티브 적용
+    pVTX[0].x = vP[0].x; pVTX[1].x = vP[1].x;
+    pVTX[0].y = vP[0].y; pVTX[1].y = vP[1].y;
+    pVTX[0].z = 0.0;     pVTX[1].z = 0.0;
+    pVTX[0].r = 1.0;     pVTX[1].r = 1.0;
+    pVTX[0].c = iC1;     pVTX[1].c = iC2;
+    pVTX[0].u = tu;      pVTX[1].u = tu + tw;
+    pVTX[0].v = tv;      pVTX[1].v = tv;
+
+
+    pVTX[3].x = vP[2].x; pVTX[2].x = vP[3].x;
+    pVTX[3].y = vP[2].y; pVTX[2].y = vP[3].y;
+    pVTX[3].z = 0.0;     pVTX[2].z = 0.0;
+    pVTX[3].r = 1.0;     pVTX[2].r = 1.0;
+    pVTX[3].c = iC3;     pVTX[2].c = iC4;
+    pVTX[3].u = tu;      pVTX[2].u = tu + tw;
+    pVTX[3].v = tv + th; pVTX[2].v = tv + th;
+
+    // ● Transform 적용
+    pVTX[0].x += t1x; pVTX[1].x += t2x;
+    pVTX[0].y += t1y; pVTX[1].y += t2y;
+
+    pVTX[3].x += t3x; pVTX[2].x += t4x;
+    pVTX[3].y += t3y; pVTX[2].y += t4y;
+
+    // ● 텍스쳐 적용
+    iDEV->SetTexture(000, iTEX);
+
+    // ● 버텍스버퍼 적용
+    iVB->Lock(0, sizeof(pVTX), (void**)&jVTX, 0);
+    memcpy(jVTX, pVTX, sizeof(pVTX));
+    iVB->Unlock();
+
+    // ● 프리미티브 표시
+    iDEV->SetFVF(cVTX);
+    iDEV->SetStreamSource(0, iVB, 0, sizeof(sVTX));
+
+        // 쉐이더적용
+         if(zPS) iDEV->SetPixelShader(iPS);
+         else    iDEV->SetPixelShader(NULL);
+
+//iDEV->SetPixelShader(NULL);
+
+    iDEV->DrawPrimitive(D3DPT_TRIANGLEFAN, 0, 2);
+}
+//==============================================================================
+/*
+                                           //                                  .
+void REEL_DrawSFX(LPDIRECT3DDEVICE9 iDEV,  // 적용할 3D 디바이스               .
+                  LPDIRECT3DVERTEXBUFFER9 iVB,// 적용할 3D 버텍스버퍼          .
+                  LPDIRECT3DTEXTURE9 iTEX, // 찍을텍스쳐                       .
+                                           //                                  .
+                  float iTw,   float iTh,  // 텍스쳐크기                       .
+                                           //                                  .
+                  float iPx,   float iPy,  // 표시좌표                         .
+                                           //                                  .
+                  DWORD iC1,   DWORD iC2,  // 디퓨즈광 좌상 + 우상             .
+                  DWORD iC3,   DWORD iC4,  // 디퓨즈광 좌하 + 우하             .
+                                           //                                  .
+                  float scale,             // 스케일비율                       .
+                                           //                                  .
+                  float SRx1,  float SRy1, // 소스렉트 x1,y1 (적용안하면 -1)   .
+                  float SRx2,  float SRy2) //          x2,y2 (적용안하면 -1)   .
+                                           //                                  .
+{
+    sVTX pVTX[4], vP[4];
+    void *jVTX;
+
+    float x, y, w, h;
+    float tu, tv, tw, th;
+    float Fx, Fy;
+    int   Fw, Fh;
+    float Diamond_X, Diamond_Y;
+    float  x1,  y1,  x2,  y2,  x3,  y3,  x4,  y4;
+    float Lx1, Ly1, Lx2, Ly2, Lx3, Ly3, Lx4, Ly4;
+    float aRAD;
+
+    // ● 표시좌표
+    x = iPx - 0.5;
+    y = iPy - 0.5;
+
+    //==========================================================================
+    // ● 소스렉트로 표시할 경우
+    if(SRx1!=-1 && SRy1!=-1 && SRx2!=-1 && SRy2!=-1)
+    {
+        w = (SRx2-SRx1) * scale;
+        h = (SRy2-SRy1) * scale;
+        Fx = 1.0 / iTw;
+        Fy = 1.0 / iTh;
+
+        tu = SRx1 * Fx;
+        tv = SRy1 * Fy;
+        tw = (SRx2-SRx1) * Fx;
+        th = (SRy2-SRy1) * Fy;
+    }
+    else
+    {
+        w = iTw * scale;
+        h = iTh * scale;
+
+        tu = 0.0;
+        tv = 0.0;
+
+        tw = w / iTw / scale;
+        th = h / iTh / scale;
+    }
+    //==========================================================================
+    x1 = x;   y1 = y;
+    x2 = x+w; y2 = y;
+    x3 = x;   y3 = y+h;
+    x4 = x+w; y4 = y+h;
+
+    Lx1 = x1; Ly1 = y1;
+    Lx2 = x2; Ly2 = y2;
+    Lx3 = x3; Ly3 = y3;
+    Lx4 = x4; Ly4 = y4;
+
+    vP[0].x = Lx1;
+    vP[0].y = Ly1;
+    vP[1].x = Lx2;
+    vP[1].y = Ly2;
+    vP[2].x = Lx3;
+    vP[2].y = Ly3;
+    vP[3].x = Lx4;
+    vP[3].y = Ly4;
+
+    // ● 프리미티브 적용
+    pVTX[0].x = vP[0].x; pVTX[1].x = vP[1].x;
+    pVTX[0].y = vP[0].y; pVTX[1].y = vP[1].y;
+    pVTX[0].z = 0.0;     pVTX[1].z = 0.0;
+    pVTX[0].r = 1.0;     pVTX[1].r = 1.0;
+    pVTX[0].c = iC1;     pVTX[1].c = iC2;
+    pVTX[0].u = tu;      pVTX[1].u = tu + tw;
+    pVTX[0].v = tv;      pVTX[1].v = tv;
+
+
+    pVTX[3].x = vP[2].x; pVTX[2].x = vP[3].x;
+    pVTX[3].y = vP[2].y; pVTX[2].y = vP[3].y;
+    pVTX[3].z = 0.0;     pVTX[2].z = 0.0;
+    pVTX[3].r = 1.0;     pVTX[2].r = 1.0;
+    pVTX[3].c = iC3;     pVTX[2].c = iC4;
+    pVTX[3].u = tu;      pVTX[2].u = tu + tw;
+    pVTX[3].v = tv + th; pVTX[2].v = tv + th;
+
+    // ● 텍스쳐 적용
+    iDEV->SetTexture(000, iTEX);
+
+    // ● 버텍스버퍼 적용
+    iVB->Lock(0, sizeof(pVTX), (void**)&jVTX, 0);
+    memcpy(jVTX, pVTX, sizeof(pVTX));
+    iVB->Unlock();
+
+    // ● 프리미티브 표시
+    iDEV->SetFVF(cVTX);
+    iDEV->SetStreamSource(0, iVB, 0, sizeof(sVTX));
+    iDEV->DrawPrimitive(0x6, 0, 2);
+}
+*/
+//==============================================================================
+void okMSG(char *iMSG) { MessageBox(NULL, iMSG, "♬도움말", MB_OK); }
+//==============================================================================
+int  ynMSG(char *iMSG) { return MessageBox(NULL, iMSG, "♬도움말", MB_YESNO); }
+//==============================================================================
+int A_Sort_FUNC(const void *a, const void *b)
+{ return +strcmp( (char *)a, (char *)b ); }
+//==============================================================================
+int D_Sort_FUNC(const void *a, const void *b)
+{ return -strcmp( (char *)a, (char *)b ); }
+//==============================================================================
+/*
+void Search_FOLDER(char *iFOLDER, TMemo *iMEMO)
+{
+    TSearchRec SR;
+    char cSTR[256];
+
+    //                                                                         .
+    sprintf(cSTR, "■■■폴더■■■ %s", iFOLDER);
+    iMEMO->Lines->Add(cSTR);
+
+    sprintf(cSTR, "%s/*.*", iFOLDER);
+    //                                                                         .
+    if(FindFirst(cSTR, faAnyFile, SR)==000)
+    {
+        ///////
+        if((SR.Name!=".") && (SR.Name!=".."))
+        {
+            if((SR.Attr & faDirectory)==faDirectory)
+            {
+                // ▶ 디렉토리이면 파본다.
+                sprintf(cSTR, "%s/%s", iFOLDER, SR.Name);
+                Search_FOLDER(cSTR, iMEMO);
+            }
+            else
+            {
+                sprintf(cSTR, "%s/%s", iFOLDER, SR.Name);
+                iMEMO->Lines->Add(cSTR);
+            }
+        }
+        ///////
+        while(FindNext(SR)==000)
+        {
+            if((SR.Name!=".") && (SR.Name!=".."))
+            {
+                if((SR.Attr & faDirectory)==faDirectory)
+                {
+                    // ▶ 디렉토리이면 파본다.
+                    sprintf(cSTR, "%s/%s", iFOLDER, SR.Name);
+                    Search_FOLDER(cSTR, iMEMO);
+                }
+                else
+                {
+                    sprintf(cSTR, "%s/%s", iFOLDER, SR.Name);
+                    iMEMO->Lines->Add(cSTR);
+                }
+            }
+        }
+        ///////
+        FindClose(SR);
+    }
+    //                                                                         .
+}
+*/
+//==============================================================================
+DWORD HEX2DEC(char *iHEX)
+{
+    DWORD s,v;
+    double m;
+    int L,n;
+    char z;
+
+    L = lenSTR(iHEX);
+    ///////
+    m = L-2;
+    s = 000;
+    for(n=3;n<=L;n++)
+    {
+        z = iHEX[n-1];
+
+        v = 000;
+        v = ('0'<=z && z<='9')? z-'0'    : v;
+        v = ('A'<=z && z<='F')? z-'A'+10 : v;
+        v = ('a'<=z && z<='f')? z-'a'+10 : v;
+
+        s += v* (DWORD) pow((double)16, --m);
+    }
+
+    return s;
+}
+//==============================================================================
+char *DEC2BiN(int iDEC)
+{
+    char rtn[1024];
+    char qwer[1024];
+
+    int p,num;
+    ///////
+    p = 0;
+    num = iDEC;
+
+    while(num!=000)
+    {
+        qwer[p++] = (num % 2) + '0';
+        num = num / 2;
+    }
+    qwer[p] = '\0';
+
+    REVERSE_String(rtn, qwer);
+    ///////
+    return rtn;
+}
+//==============================================================================
+int iBNDchk(int a, int n, int b) { return (a<=n && n<=b); }
+//==============================================================================
+int fBNDchk(float a, float n, float b) { return (a<=n && n<=b); }
+//==============================================================================
+void Limit_iBOUND(int *n, int minBND, int maxBND)
+{
+    *n = (*n < minBND)? minBND : *n;
+    *n = (maxBND < *n)? maxBND : *n;
+}
+//==============================================================================
+void Limit_fBOUND(float *n, float minBND, float maxBND)
+{
+    *n = (*n < minBND)? minBND : *n;
+    *n = (maxBND < *n)? maxBND : *n;
+}
+//==============================================================================
+int jRANGE(int EYEs, int EYEe)
+{
+    if(EYEs > EYEe) return 0;
+
+    return jDiCE(EYEe-EYEs+1) + EYEs-1;
+}
+//==============================================================================
+double fRANGE(char *EYEs, char *EYEe)
+{
+    double rtn;
+
+    int    Len,Ja,Jb,Jz;
+    double fPOiNTa, fSNAKEa;
+    double fPOiNTb, fSNAKEb;
+    double fWYVERN, fDRAGON, fGLORY;
+
+    int fSLAYER;
+
+    char aSTR[256], bSTR[256], kSTR[256], ySTR[256], outSTR[256];
+
+    if(atof((char *) EYEs) > atof((char *) EYEe)) return 0.0;
+    //■■■■■■■
+    fPOiNTa = fdSTR(EYEs, ".");
+    fSNAKEa = lenSTR(EYEs) - fPOiNTa;
+    //    fDRAGON = fSNAKEa;
+
+    subcpSTR(aSTR, EYEs, 1, fPOiNTa-1);
+    subcpSTR(bSTR, EYEs, fPOiNTa+1, fSNAKEa);
+    sfSTR(ySTR, "%s%s", aSTR, bSTR);
+
+    Ja = jAtoN(ySTR);
+    //■■■■■■■
+    fPOiNTb = fdSTR(EYEe, ".");
+    fSNAKEb = lenSTR(EYEe) - fPOiNTb;
+
+    fWYVERN = (fSNAKEa < fSNAKEb)? fSNAKEa : fSNAKEb;
+    fDRAGON = (fSNAKEa < fSNAKEb)? fSNAKEb : fSNAKEa;
+
+    fGLORY  = fDRAGON - fWYVERN;
+
+    subcpSTR(aSTR, EYEe, 1, fPOiNTb-1);
+    subcpSTR(bSTR, EYEe, fPOiNTb+1, fSNAKEb);
+    sfSTR(ySTR, "%s%s", aSTR, bSTR);
+
+    Jb = jAtoN(ySTR);
+
+    fSLAYER = (Ja < Jb)? 1 : 2;
+
+    //■■■■■■■
+    // 소수점 보정계산 - 1st
+    switch(fSLAYER)
+    {
+        // 앞수가 소수점자리가 모자랄 경우 ~
+    case 1: Ja *= pow(10, (double) fGLORY); break;
+        // 뒷수가 소수점자리가 모자랄 경우 ~
+    case 2: Jb *= pow(10, (double) fGLORY); break;
+    }
+
+    //■■■■■■■
+    // a ~ b 범위에서 난수생성
+    Jz = jRANGE(Ja,Jb);
+
+    sfSTR(outSTR, "%d", Jz);
+
+    //■■■■■■■
+    // 소수점 보정계산 - 2nd
+
+    Len = lenSTR(outSTR);
+
+    if(0 < Len - fDRAGON)
+    {
+        subcpSTR(aSTR, outSTR, 1, Len - fDRAGON);
+        subcpSTR(bSTR, outSTR, Len - fDRAGON+1, fDRAGON);
+    }
+    else
+    {
+        cpSTR(aSTR, "0");
+        sfSTR(outSTR, "%%0%dd", fDRAGON);
+        sfSTR(bSTR, outSTR, Jz);
+    }
+
+    sfSTR(ySTR, "%s.%s", aSTR, bSTR);
+    cpSTR(outSTR, ySTR);
+
+    rtn = atof((char *) outSTR);
+    //■■■■■■■
+    return rtn;
+}
+//==============================================================================
+int jDiCE(int Eye)  { if(Eye==000) return 000; return (rand()%Eye+1); }
+//==============================================================================
+int jPROB(int Hope, int Bm) { return (Bm-Hope) <= rand()%Bm+1; }
+//==============================================================================
+int cRECT(Cru_RECT A, Cru_RECT B)
+{
+    int sw;
+
+    if(A.x2<A.x1) sw=A.x1, A.x1=A.x2, A.x2=sw;
+    if(A.y2<A.y1) sw=A.y1, A.y1=A.y2, A.y2=sw;
+    if(B.x2<B.x1) sw=B.x1, B.x1=B.x2, B.x2=sw;
+    if(B.y2<B.y1) sw=B.y1, B.y1=B.y2, B.y2=sw;
+
+    //                                                  .
+    // ※ A,B 네모가 있고, UDRL = 선분의 기하위치 이면,  .
+    //                                                  .
+    // 교차판정 = ( AxR > BxL ) and (AxL < BxR )        .
+    //            ( AyD > ByU ) and (AyU < ByD )        .
+    //                                                  .
+    return ( (A.x2 >= B.x1) && (A.x1 <= B.x2)
+           &&(A.y2 >= B.y1) && (A.y1 <= B.y2));
+}
+//==============================================================================
+int cRECTpxl(int Ax1, int Ay1, int Ax2, int Ay2,
+             int Bx1, int By1, int Bx2, int By2)
+{
+    int sw;
+
+    if(Ax2<Ax1) sw=Ax1, Ax1=Ax2, Ax2=sw;
+    if(Ay2<Ay1) sw=Ay1, Ay1=Ay2, Ay2=sw;
+    if(Bx2<Bx1) sw=Bx1, Bx1=Bx2, Bx2=sw;
+    if(By2<By1) sw=By1, By1=By2, By2=sw;
+
+    //                                                  .
+    // ※ A,B 네모가 있고, UDRL = 선분의 기하위치 이면,  .
+    //                                                  .
+    // 교차판정 = ( AxR > BxL ) and (AxL < BxR )        .
+    //            ( AyD > ByU ) and (AyU < ByD )        .
+    //                                                  .
+    return ( (Ax2 >= Bx1) && (Ax1 <= Bx2)
+           &&(Ay2 >= By1) && (Ay1 <= By2));
+}
+//==============================================================================
+int pRECT(int x, int y, Cru_RECT N)
+{
+    int sw;
+
+    if(N.x2<N.x1) sw=N.x1, N.x1=N.x2, N.x2=sw;
+    if(N.y2<N.y1) sw=N.y1, N.y1=N.y2, N.y2=sw;
+
+    return (N.x1<=x && x<=N.x2 && N.y1<=y && y<=N.y2);
+}
+//==============================================================================
+int pRECTpxl(int x, int y,
+             int Nx1, int Ny1, int Nx2, int Ny2)
+{
+    int sw;
+
+    if(Nx2<Nx1) sw=Nx1, Nx1=Nx2, Nx2=sw;
+    if(Ny2<Ny1) sw=Ny1, Ny1=Ny2, Ny2=sw;
+
+    return (Nx1<=x && x<=Nx2 && Ny1<=y && y<=Ny2);
+}
+//==============================================================================
+int CLiP_BOUND(int iN, int cN)
+{ return (iN<0)? 0 : ((cN-1)<iN)? cN-1 : iN; }
+//==============================================================================
+int CLiP_xyCHK(int iX, int iY, int cX, int cY)
+{ return ((0<=iX) && (iX<=cX) && (0<=iY) && (iY<=cY)); }
+//==============================================================================
+int CLiP_SPACE_BOUND(int iN, int cN, int s1, int s2)
+{ return (iN<(s1))? s1 : ((cN-s2-1)<iN)? cN-s2-1 : iN; }
+//==============================================================================
+int CLiP_SPACE_xyCHK(int iX, int iY, int cX, int cY,
+                     int sU, int sD, int sL, int sR)
+{ return ((sL<=iX) && (iX<=(cX-sR)) && (sU<=iY) && (iY<=(cY-sD))); }
+//==============================================================================
+int fZERO(float n)
+{ return ((n)<0.000001 && (n)>-0.000001); }
+//==============================================================================
+int piNSiDE(float x, float y, float Xmin, float Ymin, float Xmax, float Ymax)
+{ return (Xmin<=x && x<=Xmax && Ymin<=y && y<=Ymax); }
+//==============================================================================
+int Liang_Barsky_CHK(float n, float d, float *tE, float *tL)
+{
+    float t;
+
+    if (fZERO(d)) return (n <= 0.0);
+
+    t = n / d;
+
+    if (d > 0)
+    {
+        if (t > *tL) return 0;
+        if (t > *tE) *tE = t;
+    }
+    else
+    {
+        if (t < *tE) return 0;
+        if (t < *tL) *tL = t;
+    }
+
+    return 1;
+}
+//==============================================================================
+int Liang_Barsky_CLiP(float *x1,  float *y1,  float *x2,  float *y2,
+                      float Xmin, float Ymin, float Xmax, float Ymax)
+{
+    float Px1,Py1,Px2,Py2;
+    float Dx, Dy, tE, tL;
+
+    Px1 = *x1; Py1 = *y1;
+    Px2 = *x2; Py2 = *y2;
+    //                                                                         .
+    Dx = Px2 - Px1;
+    Dy = Py2 - Py1;
+
+    if(fZERO(Dx) && fZERO(Dy)
+    && piNSiDE(Px1,Py1,Xmin,Ymin,Xmax,Ymax)) return 0x0;
+
+    tE = 0;
+    tL = 1;
+
+    if (Liang_Barsky_CHK(Xmin - Px1,  Dx, &tE, &tL)
+    &&  Liang_Barsky_CHK(Px1 - Xmax, -Dx, &tE, &tL)
+    &&  Liang_Barsky_CHK(Ymin - Py1,  Dy, &tE, &tL)
+    &&  Liang_Barsky_CHK(Py1 - Ymax, -Dy, &tE, &tL))
+    {
+        Px2 = (tL<1)? Px1+tL*Dx : Px2;
+        Py2 = (tL<1)? Py1+tL*Dy : Py2;
+        Px1 = (tE>0)? Px1+tE*Dx : Px1;
+        Py1 = (tE>0)? Py1+tE*Dy : Py1;
+    }
+    else return 0x0;
+    //                                                                         .
+    *x1 = Px1; *y1 = Py1;
+    *x2 = Px2; *y2 = Py2;
+
+    return 0x1;
+}
+//==============================================================================
+int  iSOx(int x, int y) { return +x-y; }
+int  iSOy(int x, int y) { return +x+y; }
+//==============================================================================
+float fDiSTANCE(float x1, float y1, float x2, float y2)
+{
+    float r,Dx,Dy;
+    ///////
+    if(x1<x2) fSWAP(&x1,&x2);
+    if(y1<y2) fSWAP(&y1,&y2);
+
+    Dx = (x1-x2);
+    Dy = (y1-y2);
+
+        r = sqrt(Dx*Dx + Dy*Dy);
+
+    ///////
+    return r;
+}
+//==============================================================================
+int fDiST_CHK(float sx, float sy,
+              float x,  float y,
+              float ex, float ey)
+{
+    return (fDiSTANCE(sx,sy,ex,ey) < fDiSTANCE(sx,sy,x,y));
+}
+//==============================================================================
+float fDiST3D(float x1, float y1, float z1, float x2, float y2, float z2)
+{
+    float r,Dx,Dy,Dz;
+    ///////
+    if(x1<x2) fSWAP(&x1,&x2);
+    if(y1<y2) fSWAP(&y1,&y2);
+    if(z1<z2) fSWAP(&z1,&z2);
+
+    Dx = (x1-x2);
+    Dy = (y1-y2);
+    Dz = (z1-z2);
+
+    r = sqrt(Dx*Dx + Dy*Dy + Dz*Dz);
+
+    ///////
+    return r;
+}
+//==============================================================================
+void GET_PtoP_COORDNATE(float Px1, float Py1,
+                        float Px2, float Py2,
+                        int   Slice,
+                        float oX[], float oY[])
+{
+    int n;
+    float m,d,x,y;
+    //■■■■■■■
+    // 기울기
+    if((Px2-Px1)==000)
+    {
+        // 분모가 0 일 경우를 대비한 예외처리
+        m = (Py2-Py1) / 1;
+    }
+    else
+    {
+        m = (Py2-Py1) / (Px2-Px1);
+    }
+    //■■■■■■■
+    // 이동 간격 변량
+    d = (Px2-Px1) / Slice;
+
+    // 이동 간격 변량을 적용한 각각의 뷰이동 위치
+    for(n=1;n<=Slice;n++)
+    {
+        x = (n-1)*d;
+        y = (n-1)*d *m;
+
+        oX[n] = Px1 +x;
+        oY[n] = Py1 +y;
+    }
+
+    //■■■■■■■
+}
+//==============================================================================
+float Angle_CALC(float sx, float sy, float tx, float ty)
+{
+    float r,Dx,Dy;
+    ///////
+    Dx = tx-sx;
+    Dy = ty-sy;
+
+        // ▶ atan2 에러방지
+        if(0.0!=Dx)
+        {
+            r = atan2(Dy,Dx) * 180/mPi;
+        }
+        else
+        {
+            r = 0.0;
+        }
+
+    if(0<Dy) r = 360-r;
+    else     r = -r;
+    ///////
+    return r;
+}
+//==============================================================================
+int Compass_CALC(int iSLiCE, float fANGLE)
+{
+    int r;
+    float sGAK, sGAK2, w, tGAK, d;
+    ///////
+
+    sGAK  = 360.0 / (float) iSLiCE;
+    sGAK2 = sGAK / 2.0;
+    w     = (float) iSLiCE/2.0 + 1.0;
+    tGAK  = sGAK2 * w;
+
+    d     = ((tGAK-fANGLE)/sGAK)+1.0;
+
+    r = (d < 1.0)? d+iSLiCE : d;
+
+    return r;
+}
+//==============================================================================
+int MAKE_Spline(float iX[], float iY[], int iCNT, int oCNT, float oX[], float oY[]) 
+{ 
+    int     i, *D;
+    int     idx = 0;
+
+    float   x, y;
+    float   t, dt;
+    float   *pDeltaX, *pDeltaY;
+    //
+    dt = 1.0 / (oCNT);
+
+    D        = new int[iCNT + 1];
+    pDeltaX  = new float[iCNT + 1];
+    pDeltaY  = new float[iCNT + 1];
+
+    D[0] = 2;
+    //
+    for(i = 1; i < (iCNT - 1); i++) D[i] = 4;
+    D[iCNT-1] = 2;
+
+    pDeltaX[0] = 3 * (iX[1] - iX[0]);
+    pDeltaY[0] = 3 * (iY[1] - iY[0]);
+
+    for(i = 1; i < (iCNT - 1); i++)
+    {
+        pDeltaX[i] = 3 * (iX[i + 1] - iX[i - 1]);
+        pDeltaY[i] = 3 * (iY[i + 1] - iY[i - 1]);
+    }
+    pDeltaX[i] = 3 * (iX[i] - iX[i - 1]);
+    pDeltaY[i] = 3 * (iY[i] - iY[i - 1]);
+
+    pDeltaX[i] /= D[i];
+    pDeltaY[i] /= D[i];
+
+    for(i = iCNT - 2; i >= 0; i--)
+    {
+        pDeltaX[i] = (pDeltaX[i] - pDeltaX[i + 1]) / D[i];
+        pDeltaY[i] = (pDeltaY[i] - pDeltaY[i + 1]) / D[i];
+    }
+    //
+    for(i = 0; i < (iCNT-1); i++)
+    {
+        for(t = 0.0; t < 1.0; t += dt)
+        {
+            x = (2 * t * t * t - 3 * t * t + 1) * iX[i]
+            + (-2 * t * t * t + 3 * t * t) * iX[i + 1]
+            + (t * t * t - 2 * t * t + t) * pDeltaX[i]
+            + (t * t * t - t * t) * pDeltaX[i + 1];
+
+            y = (2 * t * t * t - 3 * t * t + 1) * iY[i]
+            + (-2 * t * t * t + 3 * t * t) * iY[i + 1]
+            + (t * t * t - 2 * t * t + t) * pDeltaY[i]
+            + (t * t * t - t * t) * pDeltaY[i + 1];
+
+            oX[idx]   = x;
+            oY[idx++] = y;
+        }
+    }
+    oX[idx]   = iX[iCNT - 1];
+    oY[idx++] = iY[iCNT - 1];
+    //
+    delete [] D;
+    delete [] pDeltaX;
+    delete [] pDeltaY;
+
+    return idx;
+} 
+//==============================================================================
+int MAKE_Spline3D(float iX[], float iY[], float iZ[], int iCNT, int oCNT, float oX[], float oY[], float oZ[])
+{
+    int i, *D;
+    int idx = 0;
+
+    float x, y, z;
+    float t, dt;
+    float *pDeltaX, *pDeltaY, *pDeltaZ;
+    //
+    dt = 1.0f / (oCNT);
+
+    D        = new int[iCNT + 1];
+    pDeltaX = new float[iCNT + 1];
+    pDeltaY = new float[iCNT + 1];
+    pDeltaZ = new float[iCNT + 1];
+
+    D[ 0 ] = 2;
+    //
+    for( i = 1; i < (iCNT - 1); i++ )
+        D[i] = 4;
+    D[ iCNT-1 ] = 2;
+
+    pDeltaX[0] = 3 * (iX[1] - iX[0]);
+    pDeltaY[0] = 3 * (iY[1] - iY[0]);
+    pDeltaZ[0] = 3 * (iZ[1] - iZ[0]);
+
+    for(i = 1; i < (iCNT - 1); i++)
+    {
+        pDeltaX[i] = 3 * (iX[i + 1] - iX[i - 1]);
+        pDeltaY[i] = 3 * (iY[i + 1] - iY[i - 1]);
+        pDeltaZ[i] = 3 * (iZ[i + 1] - iZ[i - 1]);
+    }
+    pDeltaX[i] = 3 * (iX[i] - iX[i - 1]);
+    pDeltaY[i] = 3 * (iY[i] - iY[i - 1]);
+    pDeltaZ[i] = 3 * (iZ[i] - iZ[i - 1]);
+
+    pDeltaX[i] /= D[i];
+    pDeltaY[i] /= D[i];
+    pDeltaZ[i] /= D[i];
+
+    for(i = iCNT - 2; i >= 0; i--)
+    {
+        pDeltaX[i] = (pDeltaX[i] - pDeltaX[i + 1]) / D[i];
+        pDeltaY[i] = (pDeltaY[i] - pDeltaY[i + 1]) / D[i];
+        pDeltaZ[i] = (pDeltaZ[i] - pDeltaZ[i + 1]) / D[i];
+    }
+    //
+    for(i = 0; i < (iCNT-1); i++)
+    {
+        t = 0.0;
+        for( int j = 0; j < oCNT; j++, t += dt )
+        {
+            x = (2 * t * t * t - 3 * t * t + 1) * iX[i]
+            + (-2 * t * t * t + 3 * t * t) * iX[i + 1]
+            + (t * t * t - 2 * t * t + t) * pDeltaX[i]
+            + (t * t * t - t * t) * pDeltaX[i + 1];
+
+            y = (2 * t * t * t - 3 * t * t + 1) * iY[i]
+            + (-2 * t * t * t + 3 * t * t) * iY[i + 1]
+            + (t * t * t - 2 * t * t + t) * pDeltaY[i]
+            + (t * t * t - t * t) * pDeltaY[i + 1];
+
+            z = (2 * t * t * t - 3 * t * t + 1) * iZ[i]
+            + (-2 * t * t * t + 3 * t * t) * iZ[i + 1]
+            + (t * t * t - 2 * t * t + t) * pDeltaZ[ i ]
+            + (t * t * t - t * t) * pDeltaZ[i + 1];
+
+            oX[idx] = x;
+            oY[idx]    = y;
+            oZ[idx] = z;
+
+            idx++;
+        }
+    }
+
+    delete [] D;
+    delete [] pDeltaX;
+    delete [] pDeltaY;
+    delete [] pDeltaZ;
+
+    return idx;
+} 
+//==============================================================================
+void WAiT_PressMouseBTN(int iBTN)
+{
+    POINT MSE;
+    int mBUTTONs, mLBTN, mMBTN, mRBTN;
+    //■■■■■■■■■■
+    do
+    {
+        // 마우스 정보얻기
+        GetCursorPos(&MSE);
+
+        mLBTN = (0!=GetAsyncKeyState(VK_LBUTTON));
+        mMBTN = (0!=GetAsyncKeyState(VK_MBUTTON));
+        mRBTN = (0!=GetAsyncKeyState(VK_RBUTTON));
+
+        mBUTTONs = mRBTN*4 | mMBTN*2 | mLBTN*1;
+
+    } while(!(mBUTTONs==iBTN));
+    //■■■■■■■■■■
+}
+//==============================================================================
+DWORD TEX_picking(LPDIRECT3DTEXTURE9 iTEX,
+                  int tw, int th,
+                  int x, int y, float s)
+{
+    D3DLOCKED_RECT pLOCK;
+    DWORD *jSRC, r;
+
+    DWORD Jx,Jy;
+
+    if(x<1 || y<1 || tw<=x || th<=y) return 0xFF000000;
+    //                                                                         .
+    if(!iTEX) return 0x0;
+    if(!pRECTpxl(x*s,y*s,0,0,tw,th)) return 0x0;
+    //                                                                         .
+    iTEX->LockRect(0, &pLOCK, NULL, NULL);
+
+    Jy = (y-1)*tw*s;
+    Jx = (x-1)*s;
+
+    jSRC = (DWORD *) pLOCK.pBits;
+    jSRC += (Jy + Jx);
+
+        /*                  */ 
+        /**/  r = *jSRC;  /**/ 
+        /*                  */ 
+
+    iTEX->UnlockRect(0);
+    //                                                                         .
+    return r;
+}
+//==============================================================================
+int GET_32Bit_cA(DWORD iC) { return (iC & 0xFF000000) >> 24; }
+int GET_32Bit_cR(DWORD iC) { return (iC & 0x00FF0000) >> 16; }
+int GET_32Bit_cG(DWORD iC) { return (iC & 0x0000FF00) >>  8; }
+int GET_32Bit_cB(DWORD iC) { return (iC & 0x000000FF);       }
+//==============================================================================
+int GET_24Bit_cR(DWORD iC) { return (iC & 0xFF0000) >> 16; }
+int GET_24Bit_cG(DWORD iC) { return (iC & 0x00FF00) >>  8; }
+int GET_24Bit_cB(DWORD iC) { return (iC & 0x0000FF);       }
+//==============================================================================
+int Near2Pow(int n)
+{
+    int r,w,s;
+
+    for(r=1;r<=16;r++)
+    {
+        s = 1;
+        for(w=1;w<=r;w++)
+        {
+            s *= 2;
+            if(n<=s) return s;
+        }
+    }
+    return 000;
+}
+//==============================================================================
+void Melt_DXT5(BYTE *out_iMG, BYTE *in_iMG, int iW, int iH, int iBPP)
+{
+    BYTE *bytes;
+    int alpha0, alpha1;
+    BYTE codes[8];
+
+    BYTE indices[16];
+    BYTE *src;
+    BYTE *dst;
+
+    int value, byte, index;
+
+    int bpp, bps, sz, n,j,x,y;
+    ///////
+    if (iBPP == 0) iBPP = 32;
+
+    bpp = 4;
+    bps = (iW * iBPP / 8);
+    sz = iW * iH;
+
+    bytes = in_iMG;
+    //                                                                         .
+    for(y=0;y<iH;y+=4)
+    {
+        for(x=0;x<iW;x+=4)
+        {
+            if(y >= iH || x >= iW) break;
+
+            alpha0 = bytes[0];
+            alpha1 = bytes[1];
+
+            // 알파 코드북생성
+            codes[0] = (BYTE) alpha0;
+            codes[1] = (BYTE) alpha1;
+
+            if(alpha0 <= alpha1)
+            {
+                // 5-알파 코드북
+                for(n=1;n<5;++n)
+                {
+                    codes[1+n] = (BYTE)( ( (5-n)*alpha0 + n*alpha1 ) /5 );
+                }
+                codes[6] = 0;
+                codes[7] = 255;
+            }
+            else
+            {
+                // 7-알파 코드북
+                for(n=1;n<7;++n)
+                {
+                    codes[1+n] = (BYTE)( ( (7-n)*alpha0 + n*alpha1 ) /7 );
+                }
+            }
+
+            // 4x4 (16) 색 해독
+            src = bytes + 2;
+            dst = indices;
+
+            for(n=0;n<2;++n)
+            {
+                // 상위 3비트 절사
+                value = 000;
+                for(j=0;j<3;++j)
+                {
+                    byte   = *src++;
+                    value |= (byte << 8 * j);
+                }
+
+                // 언팩 3 비트 인덱스 계산
+                for(j=0;j<8;++j)
+                {
+                    index  = (value >> 3 * j) & 0x7;
+                    *dst++ = (BYTE)index;
+                }
+            }
+
+            // 16개 픽셀값 조립
+            for(n=0;n<16;++n)
+            {
+                out_iMG[4*n+3] = codes[indices[n]];
+            }
+        }
+    }
+}
+//==============================================================================
+int GET_FolderSERiAL(char *f)
+{
+    int r;
+    char Serial[10];
+
+    Serial[0] = f[0];
+    Serial[1] = f[1];
+    Serial[2] = f[2];
+    Serial[3] = '\0';
+
+    r = atoi(Serial);
+    return r;
+}
+//==============================================================================
+int GET_FileSERiAL(char *f)
+{
+    int r;
+    char Serial[10];
+
+    Serial[0] = f[1];
+    Serial[1] = f[2];
+    Serial[2] = f[3];
+    Serial[3] = f[4];
+    Serial[4] = '\0';
+
+    r = atoi(Serial);
+    return r;
+}
+//==============================================================================
+int Laser(int r, int x, int y) { return (y-1)*r+x; }
+//==============================================================================
+

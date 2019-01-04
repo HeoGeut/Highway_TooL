@@ -1,0 +1,58 @@
+//---------------------------------------------------------------------------
+
+#ifndef pXLS_importH
+#define pXLS_importH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvEdit.hpp"
+#include "AdvGlowButton.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include "CloudImage.hpp"
+#include <Vcl.Dialogs.hpp>
+
+#include "./main.h"
+//#include "./pXLS_import.h"
+#include "./pXLS_export.h"
+#include "AdvGrid.hpp"
+#include "AdvGridWorkbook.hpp"
+#include "AdvObj.hpp"
+#include "AdvUtil.hpp"
+#include "BaseGrid.hpp"
+#include <Vcl.Grids.hpp>
+#include "tmsAdvGridExcel.hpp"
+
+//---------------------------------------------------------------------------
+class TpEXCEL_import : public TForm
+{
+__published:	// IDE-managed Components
+    TAdvGlowButton *AdvGlowButton1;
+    TRadioGroup *uOPT_XLS_import_Type;
+    TAdvGlowButton *AdvGlowButton2;
+    TPanel *Panel24;
+    TAdvEdit *uEXCEL_import_File;
+    TPanel *Panel1;
+    TMemo *Memo1;
+    TAdvGlowButton *uBTN_XLS_import_Upload;
+    TAdvGlowButton *uBTN_XLS_import_Close;
+    TOpenDialog *uDLG_XLS_import;
+    TAdvGridExcelIO *uEXCEL;
+    TAdvGridWorkbook *uEXCEL_wb_imp;
+    TAdvStringGrid *uEXCEL_wbGrid;
+    TAdvStringGrid *uEXCEL_wb_expGrid;
+    void __fastcall uBTN_XLS_import_CloseClick(TObject *Sender);
+    void __fastcall AdvGlowButton1Click(TObject *Sender);
+    void __fastcall uBTN_XLS_import_UploadClick(TObject *Sender);
+    void __fastcall AdvGlowButton2Click(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+    __fastcall TpEXCEL_import(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+//extern PACKAGE TPGM *PGM;                      // ¸ÞÀÎ
+extern PACKAGE TpEXCEL_import *pEXCEL_import;  // ¿¢¼¿ÀÓÆ÷ÆÃ ÆË¾÷
+//extern PACKAGE TpEXCEL_export *pEXCEL_export;  // ¿¢¼¿ÀÍ½ºÆ÷ÆÃ ÆË¾÷
+//---------------------------------------------------------------------------
+#endif

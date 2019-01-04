@@ -1,0 +1,595 @@
+#include "./RAD/Cru_SpaceLiST.h"
+
+#include <Windows.h>
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+// iList 공백리스트 속에 파라메타순서 s위치에 iSTR 문자열을 삽입
+// s위치가 0 이면, 마지막에 추가
+char *ADD_jSPACE_List(char *iList, int iSEL, char *iSTR)
+{
+    char rtn[4096];
+
+    int LastSEL;
+    int Len,cnt;
+    int n;
+
+    char Jam[10];
+
+    char Ruby1[1024];
+    char Ruby2[1024];
+    //■■■■■■■■■■■■■■■■■■■■
+    LastSEL = paraCNT_jSPACE_List(iList);
+
+    Len = lenSTR(iList);
+
+    n = 1;
+    cnt = 1;
+
+    memset(Ruby1, 000, sizeof(Ruby1));
+    memset(Ruby2, 000, sizeof(Ruby2));
+
+        //▩▩▩▩▩▩▩▩▩▩
+        // 마지막 위치끝에 추가인가 ?
+        if(iSEL==000)
+        {
+            if(LastSEL==000) cpSTR(rtn, iSTR);
+            else
+            {
+                cpSTR(rtn, iList);
+                adSTR(rtn, ",");
+                adSTR(rtn, iSTR);
+            }
+
+            return rtn;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+        while(cnt<iSEL)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+            if(cnt < iSEL)
+            {
+                cpSTR(Ruby1, adSTR(Ruby1, Jam));
+            }
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+        while(n<=Len)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cpSTR(Ruby2, adSTR(Ruby2, Jam));
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+
+
+// 첫번째 파라메타 위치에 삽입인가 ?
+if(iSEL==1)
+{
+    if(LastSEL==1) cpSTR(rtn, iSTR);
+    else
+    {
+        cpSTR(rtn, iSTR);
+        adSTR(rtn, ",");
+        adSTR(rtn, Ruby2);
+    }
+}
+// 중간 or 마지막 파라메타 위치에 삽입인가 ?
+else
+{
+    cpSTR(rtn, Ruby1);
+    adSTR(rtn, ",");
+    adSTR(rtn, iSTR);
+    adSTR(rtn, ",");
+    adSTR(rtn, Ruby2);
+}
+
+
+    //■■■■■■■■■■■■■■■■■■■■
+    return rtn;
+}
+//==============================================================================
+// iList 공백리스트 속에 파라메타순서 s위치에 iSTR 문자열을 교체
+char *CHG_jSPACE_List(char *iList, int iSEL, char *iSTR)
+{
+    char rtn[4096];
+
+    int LastSEL;
+    int Len,cnt;
+    int n;
+
+    char Jam[10];
+
+    char Ruby1[1024];
+    char Ruby2[1024];
+    //■■■■■■■■■■■■■■■■■■■■
+    LastSEL = paraCNT_jSPACE_List(iList);
+
+    Len = lenSTR(iList);
+
+    n = 1;
+    cnt = 1;
+
+    memset(Ruby1, 000, sizeof(Ruby1));
+    memset(Ruby2, 000, sizeof(Ruby2));
+
+        //▩▩▩▩▩▩▩▩▩▩
+        while(cnt<iSEL)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+            if(cnt < iSEL)
+            {
+                cpSTR(Ruby1, adSTR(Ruby1, Jam));
+            }
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+        memset(Jam, 000, sizeof(Jam));
+        ++n;
+
+        while(!eqSTR(Jam,",") && n<=Len)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+        while(n<=Len)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cpSTR(Ruby2, adSTR(Ruby2, Jam));
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+
+
+// 첫번째 파라메타 위치에 교체인가 ?
+if(iSEL==1)
+{
+    cpSTR(rtn, iSTR);
+    adSTR(rtn, ",");
+    adSTR(rtn, Ruby2);
+}
+// 마지막 파라메타 위치에 교체인가 ?
+else if(iSEL==LastSEL)
+{
+    cpSTR(rtn, Ruby1);
+    adSTR(rtn, ",");
+    adSTR(rtn, iSTR);
+}
+// 중간 파라메타 위치에 교체인가 ?
+else
+{
+    cpSTR(rtn, Ruby1);
+    adSTR(rtn, ",");
+    adSTR(rtn, iSTR);
+    adSTR(rtn, ",");
+    adSTR(rtn, Ruby2);
+}
+
+    //■■■■■■■■■■■■■■■■■■■■
+    return rtn;
+}
+//==============================================================================
+// iList 공백리스트 속에 파라메타순서 s위치에 iSTR 문자열을 삭제
+char *DEL_jSPACE_List(char *iList, int iSEL)
+{
+    char rtn[4096];
+
+    int LastSEL;
+    int Len,cnt;
+    int n;
+
+    char Jam[10];
+
+    char Ruby1[1024];
+    char Ruby2[1024];
+    //■■■■■■■■■■■■■■■■■■■■
+    LastSEL = paraCNT_jSPACE_List(iList);
+
+    Len = lenSTR(iList);
+
+    n = 1;
+    cnt = 1;
+
+    memset(Ruby1, 000, sizeof(Ruby1));
+    memset(Ruby2, 000, sizeof(Ruby2));
+
+        //▩▩▩▩▩▩▩▩▩▩
+        while(cnt<iSEL)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+            if(cnt < iSEL)
+            {
+                cpSTR(Ruby1, adSTR(Ruby1, Jam));
+            }
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+        memset(Jam, 000, sizeof(Jam));
+        ++n;
+
+        while(!eqSTR(Jam,",") && n<=Len)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+        while(n<=Len)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cpSTR(Ruby2, adSTR(Ruby2, Jam));
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+
+
+// 첫번째 파라메타 위치에 삭제인가 ?
+if(iSEL==1)
+{
+    cpSTR(rtn, Ruby2);
+}
+// 마지막 파라메타 위치에 삭제인가 ?
+else if(iSEL==LastSEL)
+{
+    cpSTR(rtn, Ruby1);
+}
+// 중간 파라메타 위치에 삭제인가 ?
+else
+{
+    cpSTR(rtn, Ruby1);
+    adSTR(rtn, ",");
+    adSTR(rtn, Ruby2);
+}
+
+    //■■■■■■■■■■■■■■■■■■■■
+    return rtn;
+}
+//==============================================================================
+// iList 공백리스트 속에 iSEL 위치의 문자열 획득
+char *jSPACE_List(char *iList, int iSEL)
+{
+    char rtn[4096];
+
+    int Len,cnt;
+    int n;
+
+    char Jam[10];
+
+    char Ruby[1024];
+    //■■■■■■■■■■■■■■■■■■■■
+    Len = lenSTR(iList);
+
+    n = 1;
+    cnt = 1;
+
+    memset(Ruby, 000, sizeof(Ruby));
+
+        //▩▩▩▩▩▩▩▩▩▩
+        while(n<=Len)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            if(eqSTR(Jam,","))
+            {
+                ++cnt;
+            }
+            else
+            {
+                //▩▩▩▩▩▩▩▩▩▩
+                // 공백카운트가 일치하면 단어조립
+                if(cnt==iSEL)
+                {
+                    cpSTR(Ruby, adSTR(Ruby, Jam));
+                }
+                //▩▩▩▩▩▩▩▩▩▩
+            }
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+
+    //■■■■■■■■■■■■■■■■■■■■
+    cpSTR(rtn, Ruby);
+
+    return rtn;
+}
+//==============================================================================
+// iList 공백리스트 속에 파라메타 전체개수 획득
+int  paraCNT_jSPACE_List(char *iList)
+{
+    int rtn;
+
+    int Len,cnt;
+    int n;
+
+    char Jam[10];
+    //■■■■■■■■■■■■■■■■■■■■
+    Len = lenSTR(iList);
+
+    n = 1;
+    cnt = 1;
+
+        //▩▩▩▩▩▩▩▩▩▩
+        while(n<=Len)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+        if(n==1) cnt = 0;
+
+    //■■■■■■■■■■■■■■■■■■■■
+    rtn = cnt;
+
+    return rtn;
+}
+//==============================================================================
+// iList 공백리스트 속에 iPARA 문자열이 몇번째 공백위치에 있는지 계산
+int  SEQ_jSPACE_List(char *iList, char *iPARA)
+{
+    int rtn;
+
+    int Len,cnt;
+    int n,f;
+
+    char Jam[10];
+    //■■■■■■■■■■■■■■■■■■■■
+    Len = lenSTR(iList);
+
+    f = fdSTR(iList, iPARA);
+
+        if(f==0) return 000;
+
+        n = 1;
+        cnt = 1;
+        //▩▩▩▩▩▩▩▩▩▩
+        while(n<=f)
+        {
+            subcpSTR(Jam, iList, n, 1);
+
+            cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+            ++n;
+        }
+        //▩▩▩▩▩▩▩▩▩▩
+
+    //■■■■■■■■■■■■■■■■■■■■
+    rtn = cnt;
+
+    return rtn;
+}
+//==============================================================================
+// iList 공백리스트 속에 파라메타순서 s1위치와 s2위치 문자열을 교환
+char *SWAP_jSPACE_List(char *iList, int iSEL1, int iSEL2)
+{
+    char rtn[4096];
+
+    int LastSEL;
+
+    int  Len,cnt;
+    int n,k,p1,p2;
+
+    char Jam[10];
+    char kSTR[1024];
+
+    char Gold1[1024];
+    char Gold2[1024];
+
+    char Ruby1[1024];
+    char Ruby2[1024];
+    char Ruby3[1024];
+    //■■■■■■■■■■■■■■■■■■■■
+    LastSEL = paraCNT_jSPACE_List(iList);
+
+    p1 = iSEL1;
+    p2 = iSEL2;
+
+        // 인수 소팅
+        if(p2 < p1) { k = p1; p1 = p2; p2 = k; }
+
+        // 예외처리 트랩
+        memset(rtn, 000, sizeof(rtn));
+        memset(Jam, 000, sizeof(Jam));
+
+        if(p1==0) cpSTR(Jam, "$zeroPOS1");
+        if(p2==0) cpSTR(Jam, "$zeroPOS2");
+
+        if(LastSEL<p1) cpSTR(Jam, "$overPOS1");
+        if(LastSEL<p2) cpSTR(Jam, "$overPOS2");
+
+        if(p1==p2) cpSTR(Jam, "$samePOS");
+
+        if(Jam[0]=='$')
+        {
+            cpSTR(rtn, Jam);
+            goto EXiT_SWAP_jSPACE_List;
+        }
+
+        Len = lenSTR(iList);
+        //▩▩▩▩▩▩▩▩▩▩
+        // 맞교환할 인수문자열 추출
+
+            cpSTR(Gold1, jSPACE_List(iList, p1));
+            cpSTR(Gold2, jSPACE_List(iList, p2));
+
+        //▩▩▩▩▩▩▩▩▩▩
+        memset(Ruby1, 000, sizeof(Ruby1));
+        memset(Ruby2, 000, sizeof(Ruby2));
+        memset(Ruby3, 000, sizeof(Ruby3));
+
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+        n = 1;
+        cnt = 1;
+        //----------
+        if(1 < p1)
+        {
+            while(n<=Len)
+            {
+                subcpSTR(Jam, iList, n, 1);
+
+                cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+                if(cnt < p1)
+                {
+                    adSTR(Ruby1, Jam);
+                }
+
+                ++n;
+            }
+        }
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+        n = 1;
+        cnt = 1;
+        //----------
+        if(1 < p2-p1)
+        {
+            while(n<=Len)
+            {
+                subcpSTR(Jam, iList, n, 1);
+
+                cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+                if(iBNDchk(p1+1, cnt, p2-1))
+                {
+                    adSTR(Ruby2, Jam);
+                }
+
+                ++n;
+            }
+
+            subcpSTR(kSTR, Ruby2, 2, lenSTR(Ruby2)-1);
+            cpSTR(Ruby2, kSTR);
+        }
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+        n = 1;
+        cnt = 1;
+        //----------
+        if(p2 < LastSEL)
+        {
+            while(n<=Len)
+            {
+                subcpSTR(Jam, iList, n, 1);
+
+                cnt = (eqSTR(Jam, ","))? cnt+1 : cnt;
+
+                if(p2 < cnt)
+                {
+                    adSTR(Ruby3, Jam);
+                }
+
+                ++n;
+            }
+
+            subcpSTR(kSTR, Ruby3, 2, lenSTR(Ruby3)-1);
+            cpSTR(Ruby3, kSTR);
+        }
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+        //▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣▣
+
+
+//----------
+if(p1==1)
+{
+    if(p2==2)
+    {
+        cpSTR(rtn, Gold2);
+        adSTR(rtn, ",");
+        adSTR(rtn, Gold1);
+        adSTR(rtn, ",");
+        adSTR(rtn, Ruby3);
+    }
+    else
+    {
+        if(p2==LastSEL)
+        {
+            cpSTR(rtn, Gold2);
+            adSTR(rtn, ",");
+            adSTR(rtn, Ruby2);
+            adSTR(rtn, ",");
+            adSTR(rtn, Gold1);
+        }
+        else
+        {
+            cpSTR(rtn, Gold2);
+            adSTR(rtn, ",");
+            adSTR(rtn, Ruby2);
+            adSTR(rtn, ",");
+            adSTR(rtn, Gold1);
+            adSTR(rtn, ",");
+            adSTR(rtn, Ruby3);
+        }
+    }
+}
+//----------
+else if(p2==LastSEL)
+{
+    if(p1==LastSEL-1)
+    {
+        cpSTR(rtn, Ruby1);
+        adSTR(rtn, ",");
+        adSTR(rtn, Gold2);
+        adSTR(rtn, ",");
+        adSTR(rtn, Gold1);
+    }
+    else
+    {
+        cpSTR(rtn, Ruby1);
+        adSTR(rtn, ",");
+        adSTR(rtn, Gold2);
+        adSTR(rtn, ",");
+        adSTR(rtn, Ruby2);
+        adSTR(rtn, ",");
+        adSTR(rtn, Gold1);
+    }
+}
+//----------
+else
+{
+    cpSTR(rtn, Ruby1);
+    adSTR(rtn, ",");
+    adSTR(rtn, Gold2);
+    adSTR(rtn, ",");
+    adSTR(rtn, Ruby2);
+    adSTR(rtn, ",");
+    adSTR(rtn, Gold1);
+    adSTR(rtn, ",");
+    adSTR(rtn, Ruby3);
+}
+//----------
+
+
+EXiT_SWAP_jSPACE_List:
+
+    //■■■■■■■■■■■■■■■■■■■■
+    return rtn;
+}
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+//■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■
+// ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■.
+
