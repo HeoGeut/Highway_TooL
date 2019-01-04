@@ -2708,8 +2708,8 @@ object PGM: TPGM
           TabOrder = 16
         end
         object uBTN_mFiND: TAdvGlassButton
-          Left = 430
-          Top = 19
+          Left = 416
+          Top = 21
           Width = 80
           Height = 40
           Cursor = crHandPoint
@@ -2735,8 +2735,8 @@ object PGM: TPGM
           OnClick = uBTN_mFiNDClick
         end
         object uBTN_miNiT: TAdvGlassButton
-          Left = 430
-          Top = 65
+          Left = 325
+          Top = 81
           Width = 80
           Height = 25
           Cursor = crHandPoint
@@ -5910,7 +5910,7 @@ object PGM: TPGM
     Left = 1730
     Top = 705
     Bitmap = {
-      494C010104000800B80010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010104000800BC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
